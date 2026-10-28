@@ -35,7 +35,9 @@ bool CommandHistory::load(const QString& filename)
 
 	QByteArray ba = inFile.readAll();
 	QDataStream in(&ba, QIODevice::ReadOnly);
-	in.setVersion(LAUNCHY_VERSION);
+	// 2.x passed LAUNCHY_VERSION here; Qt clamped that to Qt_4_6. Keep that
+	// format so a 3.0 version bump does not rewrite history.dat.
+	in.setVersion(QDataStream::Qt_4_6);
 	while (!in.atEnd())
 	{
 		InputDataList item;
@@ -50,8 +52,8 @@ bool CommandHistory::load(const QString& filename)
 void CommandHistory::save(const QString& filename) const
 {
 	QByteArray ba;
-	QDataStream out(&ba, QIODevice::ReadWrite); 
-	out.setVersion(LAUNCHY_VERSION);
+	QDataStream out(&ba, QIODevice::ReadWrite);
+	out.setVersion(QDataStream::Qt_4_6);
 
 	foreach(InputDataList item, history)
 	{
