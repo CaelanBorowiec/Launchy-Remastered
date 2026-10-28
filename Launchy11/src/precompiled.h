@@ -29,12 +29,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QtWidgets>
 #include <QtNetwork>
 #include <QFuture>
+#include <QRegExp>
 
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
 
 #include <stdlib.h>
+#include <algorithm>
 #include <memory>
 
 #ifdef Q_OS_WIN

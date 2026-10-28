@@ -139,7 +139,7 @@ void FileSearch::search(const QString& searchText, QList<CatItem>& searchResults
 	else if (sort)
 	{
 		// If we're not matching exactly and there's a filename then do a priority sort
-		qSort(searchResults.begin(), searchResults.end(), CatLessNoPtr);
+		std::sort(searchResults.begin(), searchResults.end(), CatLessNoPtr);
 	}
 
 	inputData.last().setLabel(LABEL_FILE);

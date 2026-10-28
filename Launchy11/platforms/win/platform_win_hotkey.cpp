@@ -107,7 +107,7 @@ public:
                 , id_(0)
 				, connected(false)
         {
-			widgetWinId = winId();
+			widgetWinId = reinterpret_cast<HWND>(winId());
 
 			if (convertKeySequence(ks, &mod, &key))
 			{
@@ -132,7 +132,7 @@ public:
 						connected = true;
 					break;
 				default:
-					if (RegisterHotKey(winId(), nextId, mod, key))
+					if (RegisterHotKey(reinterpret_cast<HWND>(winId()), nextId, mod, key))
 					{
 						id_ = nextId++;
 						connected = true;
@@ -155,7 +155,7 @@ public:
 				connected = false;
 			}
 			else if (id_) {
-				UnregisterHotKey(winId(), id_);
+				UnregisterHotKey(reinterpret_cast<HWND>(winId()), id_);
 				connected = false;
 			}
         }
@@ -163,13 +163,14 @@ public:
         /**
          * Triggers activated() signal when the hotkey is activated.
          */
-        bool winEvent(MSG* m, long* result)
+        bool nativeEvent(const QByteArray& eventType, void* message, qintptr* result) override
 		{
+			MSG* m = static_cast<MSG*>(message);
 			if ((m->message == WM_HOTKEY && m->wParam == id_) || m->message == WM_USER) {
 				emit trigger_->activated();
 				return true;
 			}
-			return QWidget::winEvent(m, result);
+			return QWidget::nativeEvent(eventType, message, result);
 		}
 
 private:
@@ -187,7 +188,7 @@ private:
 
         static bool convertKeySequence(const QKeySequence& ks, UINT* mod_, UINT* key_)
         {
-                int code = ks;
+                int code = ks.isEmpty() ? 0 : int(ks[0].toCombined());
 
 				// JK: I had to put the code -='s here and comment out code &= 0xffff 
 				// to correctly identify the action key

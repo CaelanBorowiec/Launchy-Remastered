@@ -2,7 +2,7 @@
 #define LINEEDITMENU_H
 
 
-#include <QtGui/QLabel>
+#include <QtWidgets/QLabel>
 
 
 class LineEditMenu : public QLabel

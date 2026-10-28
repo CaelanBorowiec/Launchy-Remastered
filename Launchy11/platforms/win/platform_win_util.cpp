@@ -41,7 +41,7 @@ void UpdateEnvironment()
 	wchar_t* currentEnvironment = GetEnvironmentStrings();
 	for (TCHAR* p = currentEnvironment; *p != 0;)
 	{
-		QString variable = QString::fromUtf16(p);
+		QString variable = QString::fromWCharArray(p);
 		QString name = variable.section("=", 0, 0);
 		// Ignore entries for drive current directory entries that have no name
 		if (name.size() > 0)
@@ -54,7 +54,7 @@ void UpdateEnvironment()
 	// Now we've finished enumerating the current environment, we can safely delete variables
 	foreach (QString name, variables)
 	{
-		SetEnvironmentVariable(name.utf16(), NULL);
+		SetEnvironmentVariable(reinterpret_cast<LPCWSTR>(name.utf16()), NULL);
 	}
 
 	// Recreate the environment using the fresh system copy
@@ -79,7 +79,7 @@ QString GetShellDirectory(int type)
 {
 	wchar_t buffer[_MAX_PATH];
 	SHGetFolderPath(NULL, type, NULL, 0, buffer);
-	return QString::fromUtf16(buffer);
+	return QString::fromWCharArray(buffer);
 }
 
 
@@ -94,7 +94,7 @@ bool EnumerateNetworkServers(QStringList& items, DWORD serverType, const wchar_t
 	{
 		for (DWORD i = 0; i < read; ++i)
 		{
-			QString name = QString::fromUtf16((ushort*)serverInfo[i].sv100_name);
+			QString name = QString::fromWCharArray(serverInfo[i].sv100_name);
 			items.push_back(name);
 		}
 	}

@@ -340,4 +340,3 @@ int VerbyPlugin::msg(int msgId, void* wParam, void* lParam)
 }
 
 
-Q_EXPORT_PLUGIN2(Verby, VerbyPlugin)

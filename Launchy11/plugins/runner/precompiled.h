@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <QtGui>
 #include <QtWidgets>
+#include <QRegExp>
 
 #ifdef _MSC_VER
 #pragma warning(pop)

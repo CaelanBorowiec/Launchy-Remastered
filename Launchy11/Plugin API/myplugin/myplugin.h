@@ -28,6 +28,7 @@ class Gui;
 class mypluginPlugin : public QObject, public PluginInterface
 {
 	Q_OBJECT
+	Q_PLUGIN_METADATA(IID "net.launchy.PluginInterface/1.0")
 	Q_INTERFACES(PluginInterface)
 
 public:

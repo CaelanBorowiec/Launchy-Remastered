@@ -316,7 +316,7 @@ QString GetShellDirectory(int type)
 {
 	wchar_t buffer[_MAX_PATH];
 	SHGetFolderPath(NULL, type, NULL, 0, buffer);
-	return QString::fromUtf16(buffer);
+	return QString::fromWCharArray(buffer);
 }
 
 
@@ -631,4 +631,3 @@ int WebyPlugin::msg(int msgId, void* wParam, void* lParam)
 	return handled;
 }
 
-Q_EXPORT_PLUGIN2(weby, WebyPlugin)

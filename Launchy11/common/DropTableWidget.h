@@ -2,7 +2,7 @@
 #define DROPTABLEWIDGET_H
 
 
-#include <QtGui/QTableWidget>
+#include <QtWidgets/QTableWidget>
 
 
 class DropTableWidget : public QTableWidget

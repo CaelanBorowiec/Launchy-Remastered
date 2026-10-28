@@ -21,7 +21,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QUrl>
 #include <QFile>
 #include <QRegExp>
-#include <QTextCodec>
 
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -159,4 +158,3 @@ int loaderPlugin::msg(int msgId, void* wParam, void* lParam)
 	return handled;
 }
 
-Q_EXPORT_PLUGIN2(loader, loaderPlugin) 

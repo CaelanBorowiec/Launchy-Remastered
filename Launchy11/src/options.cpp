@@ -427,9 +427,9 @@ void OptionsDialog::skinChanged(const QString& newSkin)
 		if (pix.hasAlpha())
 			pix.setMask(pix.mask());
 		if (!platform->supportsAlphaBorder() && QFile::exists(directory + "mask_nc.png"))
-			pix.setMask(QPixmap(directory + "mask_nc.png"));
+			pix.setMask(QBitmap::fromPixmap(QPixmap(directory + "mask_nc.png")));
 		else if (QFile::exists(directory + "mask.png"))
-			pix.setMask(QPixmap(directory + "mask.png"));
+			pix.setMask(QBitmap::fromPixmap(QPixmap(directory + "mask.png")));
 
 		if (platform->supportsAlphaBorder())
 		{

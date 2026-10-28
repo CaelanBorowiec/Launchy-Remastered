@@ -7,13 +7,13 @@
 * http://www.gnu.org/licenses/lgpl.html
 */
 
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 #include <QtGui/QBitmap>
-#include <QtGui/QCompleter>
-#include <QtGui/QDirModel>
-#include <QtGui/QFileDialog>
+#include <QtWidgets/QCompleter>
+#include <QtGui/QFileSystemModel>
+#include <QtWidgets/QFileDialog>
 #include <QtGui/QFocusEvent>
-#include <QtGui/QHBoxLayout>
+#include <QtWidgets/QHBoxLayout>
 #include "FileBrowser.h"
 
 // Browse button
@@ -50,8 +50,9 @@ FileBrowser::FileBrowser(QWidget* pParent) :
 {
 	// Filename edit
 	QCompleter* pCompleter = new QCompleter(this);
-	QDirModel* pDirModel = new QDirModel(QStringList(), QDir::NoDotAndDotDot | QDir::AllDirs | QDir::AllEntries,
-		QDir::Name | QDir::DirsFirst, pCompleter);
+	QFileSystemModel* pDirModel = new QFileSystemModel(pCompleter);
+	pDirModel->setFilter(QDir::NoDotAndDotDot | QDir::AllDirs | QDir::AllEntries);
+	pDirModel->setRootPath(QDir::rootPath());
 	pCompleter->setModel(pDirModel);
 
 	mpFileEdit = new QLineEdit(this);
@@ -68,7 +69,7 @@ FileBrowser::FileBrowser(QWidget* pParent) :
 
 	// Layout
 	QHBoxLayout* pLayout = new QHBoxLayout(this);
-	pLayout->setMargin(0);
+	pLayout->setContentsMargins(0, 0, 0, 0);
 	pLayout->setSpacing(0);
 	pLayout->addWidget(mpFileEdit, 100);
 	pLayout->addWidget(mpBrowseButton);
@@ -161,7 +162,7 @@ void FileBrowser::setBrowseFileFilters(const QString& filters)
 		QCompleter* pCompleter = mpFileEdit->completer();
 		if (pCompleter != NULL)
 		{
-			QDirModel* pDirModel = dynamic_cast<QDirModel*>(pCompleter->model());
+			QFileSystemModel* pDirModel = dynamic_cast<QFileSystemModel*>(pCompleter->model());
 			if (pDirModel != NULL)
 			{
 				pDirModel->setNameFilters(dirFilters);

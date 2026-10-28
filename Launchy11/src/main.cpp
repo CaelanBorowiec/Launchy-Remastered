@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 #include "precompiled.h"
+#include <QStandardPaths>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QScreen>
@@ -280,7 +281,7 @@ void LaunchyWidget::paintEvent(QPaintEvent* event)
 {
 	// Do the default draw first to render any background specified in the stylesheet
 	QStyleOption styleOption;
-	styleOption.init(this);
+	styleOption.initFrom(this);
 	QPainter painter(this);
 	painter.setRenderHint(QPainter::Antialiasing);
 	style()->drawPrimitive(QStyle::PE_Widget, &styleOption, &painter, this);
@@ -446,7 +447,7 @@ void LaunchyWidget::showAlternatives()
 
 	alternatives->show();
 	alternatives->setFocus();
-	qApp->syncX();
+	qApp->sync();
 }
 
 
@@ -909,7 +910,7 @@ void LaunchyWidget::searchOnInput()
 
 		// Sort the results by match and usage, then promote any that match previously
 		// executed commands
-		qSort(searchResults.begin(), searchResults.end(), CatLessNoPtr);
+		std::sort(searchResults.begin(), searchResults.end(), CatLessNoPtr);
 		catalog->promoteRecentlyUsedItems(searchTextLower, searchResults);
 
 		// Finally, if the search text looks like a file or directory name,
@@ -1396,7 +1397,7 @@ void LaunchyWidget::applySkin(const QString& name)
 			QPixmap border;
 			if (border.load(directory + "mask.png"))
 			{
-				frame.setMask(border);
+				frame.setMask(QBitmap::fromPixmap(border));
 			}
 			if (border.load(directory + "alpha.png"))
 			{
@@ -1421,7 +1422,7 @@ void LaunchyWidget::applySkin(const QString& name)
 				// For some reason, w/ compiz setmask won't work
 				// for rectangular areas.  This is due to compiz and
 				// XShapeCombineMask
-				setMask(mask);
+				setMask(QBitmap::fromPixmap(mask));
 			}
 		}
 	}
@@ -1599,7 +1600,7 @@ void LaunchyWidget::showOptionsDialog()
 #ifdef Q_OS_WIN
 		// need to use this method in Windows to ensure that keyboard focus is set when 
 		// being activated via a message from another instance of Launchy
-		SetForegroundWindowEx(options.winId());
+		SetForegroundWindowEx(reinterpret_cast<HWND>(options.winId()));
 #endif
 		options.exec();
 
@@ -1643,7 +1644,7 @@ void LaunchyWidget::showLaunchy(bool noFade)
 #ifdef Q_OS_WIN
 	// need to use this method in Windows to ensure that keyboard focus is set when 
 	// being activated via a hook or message from another instance of Launchy
-	SetForegroundWindowEx(winId());
+	SetForegroundWindowEx(reinterpret_cast<HWND>(winId()));
 #elif defined(Q_OS_LINUX)
 	/* Fix for bug 2994680: Not sure why this is necessary, perhaps someone with more
 	   Qt experience can tell, but doing these two calls will force the window to actually
@@ -1657,7 +1658,7 @@ void LaunchyWidget::showLaunchy(bool noFade)
 	input->activateWindow();
 	input->selectAll();
 	input->setFocus();
-	qApp->syncX();
+	qApp->sync();
 	// Let the plugins know
 	plugins.showLaunchy();
 }
@@ -1752,22 +1753,28 @@ void LaunchyWidget::createActions()
 }
 
 
-void fileLogMsgHandler(QtMsgType type, const char *msg)
+void fileLogMsgHandler(QtMsgType type, const QMessageLogContext&, const QString& message)
 {
-	static FILE* file;
-	if (file == 0)
+	static FILE* file = nullptr;
+	if (file == nullptr)
 	{
 		// Create a file for appending in the user's temp directory
-		QString filename = QDir::toNativeSeparators(QDesktopServices::storageLocation(QDesktopServices::TempLocation) + "/launchylog.txt");
-		file = fopen(filename.toUtf8(), "a");
+		QString filename = QDir::toNativeSeparators(QStandardPaths::writableLocation(QStandardPaths::TempLocation) + "/launchylog.txt");
+		QByteArray path = filename.toUtf8();
+		file = fopen(path.constData(), "a");
 	}
 
 	if (file)
 	{
+		QByteArray text = message.toLocal8Bit();
+		const char* msg = text.constData();
 		switch (type)
 		{
 		case QtDebugMsg:
 			fprintf(file, "Debug: %s\n", msg);
+			break;
+		case QtInfoMsg:
+			fprintf(file, "Info: %s\n", msg);
 			break;
 		case QtWarningMsg:
 			fprintf(file, "Warning: %s\n", msg);
@@ -1828,7 +1835,7 @@ int main(int argc, char *argv[])
 			}
 			else if (arg.compare("log", Qt::CaseInsensitive) == 0)
 			{
-				qInstallMsgHandler(fileLogMsgHandler);
+				qInstallMessageHandler(fileLogMsgHandler);
 			}
 			else if (arg.compare("profile", Qt::CaseInsensitive) == 0)
 			{

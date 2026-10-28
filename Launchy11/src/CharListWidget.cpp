@@ -43,7 +43,7 @@ void CharListWidget::keyPressEvent(QKeyEvent* key)
 
 void CharListWidget::mouseDoubleClickEvent(QMouseEvent* /*event*/)
 {
-	QKeyEvent key(QEvent::KeyPress, Qt::Key_Enter, NULL);
+	QKeyEvent key(QEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier);
 	emit keyPressed(&key);
 }
 

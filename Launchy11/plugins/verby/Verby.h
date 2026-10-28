@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 class VerbyPlugin : public QObject, public PluginInterface
 {
 	Q_OBJECT
+	Q_PLUGIN_METADATA(IID "net.launchy.PluginInterface/1.0")
 	Q_INTERFACES(PluginInterface)
 
 public:

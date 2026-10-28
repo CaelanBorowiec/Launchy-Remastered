@@ -33,6 +33,7 @@ class PlatformGnome : public PlatformUnix
  private:
 
     Q_OBJECT
+	Q_PLUGIN_METADATA(IID "net.launchy.PlatformGnome/1.0")
 	Q_INTERFACES(PlatformBase)
 	public:
     PlatformGnome();

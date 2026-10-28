@@ -36,8 +36,9 @@ public:
 		commandMessageId = RegisterWindowMessage(_T("LaunchyCommand"));
 	}
 
-	virtual bool winEvent(MSG* msg, long* result)
+	bool nativeEvent(const QByteArray& eventType, void* message, qintptr* result) override
 	{
+		MSG* msg = static_cast<MSG*>(message);
 		switch (msg->message)
 		{
 		case WM_SETTINGCHANGE:
@@ -68,7 +69,7 @@ public:
 			}
 			break;
 		}
-		return LaunchyWidget::winEvent(msg, result);
+		return LaunchyWidget::nativeEvent(eventType, message, result);
 	}
 
 private:
@@ -168,7 +169,7 @@ QString PlatformWin::expandEnvironmentVars(QString txt)
 	{
 		TCHAR* buffer = new TCHAR[size];
 		ExpandEnvironmentStrings((LPCWSTR)txt.utf16(), buffer, size);
-		result = QString::fromUtf16((const ushort*)buffer);
+		result = QString::fromWCharArray(buffer);
 		delete[] buffer;
 	}
 
@@ -218,7 +219,7 @@ bool PlatformWin::getComputers(QStringList& computers) const
 	{
 		foreach(QString domain, domains)
 		{
-			EnumerateNetworkServers(computers, SV_TYPE_WORKSTATION | SV_TYPE_SERVER, domain.utf16());
+			EnumerateNetworkServers(computers, SV_TYPE_WORKSTATION | SV_TYPE_SERVER, reinterpret_cast<const wchar_t*>(domain.utf16()));
 		}
 
 		// If names have been retrieved from more than one domain, they'll need sorting

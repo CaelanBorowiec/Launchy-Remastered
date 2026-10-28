@@ -143,4 +143,3 @@ bool PlatformGnome::Execute(QString path, QString args)
     return true;
 }
 
-Q_EXPORT_PLUGIN2(platform_gnome, PlatformGnome)
