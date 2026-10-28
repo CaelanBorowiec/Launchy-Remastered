@@ -1127,7 +1127,6 @@ void LaunchyWidget::updateVersion(int oldVersion)
 
 	if (oldVersion < LAUNCHY_VERSION)
 	{
-		gSettings->setValue("donateTime", QDateTime::currentDateTime().addDays(21));
 		gSettings->setValue("version", LAUNCHY_VERSION);
 	}
 }
@@ -1536,24 +1535,6 @@ void LaunchyWidget::showOptionsDialog()
 }
 
 
-void LaunchyWidget::shouldDonate()
-{
-	QDateTime time = QDateTime::currentDateTime();
-	QDateTime donateTime = gSettings->value("donateTime",time.addDays(21)).toDateTime();
-	if (donateTime.isNull()) return;
-	gSettings->setValue("donateTime", donateTime);
-
-	if (donateTime <= time)
-	{
-#ifdef Q_OS_WIN
-		runProgram("http://www.launchy.net/donate.html", "");
-#endif
-		QDateTime def;
-		gSettings->setValue("donateTime", def);
-	}
-}
-
-
 void LaunchyWidget::setFadeLevel(double level)
 {
 	level = qMin(level, 1.0);
@@ -1578,7 +1559,6 @@ void LaunchyWidget::setFadeLevel(double level)
 
 void LaunchyWidget::showLaunchy(bool noFade)
 {
-	shouldDonate();
 	hideAlternatives();
 
 	loadPosition(pos());
