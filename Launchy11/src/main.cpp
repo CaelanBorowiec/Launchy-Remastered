@@ -92,6 +92,8 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
 	menuOpen = false;
 	optionsOpen = false;
 	dragging = false;
+	clampOnDrop = false;
+	adjustingPosition = false;
 	gSearchText = "";
 
 	alwaysShowLaunchy = false;
@@ -283,7 +285,7 @@ void LaunchyWidget::paintEvent(QPaintEvent* event)
 	painter.setRenderHint(QPainter::Antialiasing);
 	style()->drawPrimitive(QStyle::PE_Widget, &styleOption, &painter, this);
 
-	// Now draw the standard frame.png graphic if there is one
+	// frame.png is 1:1 in logical pixels, the same space as the skin rectangles.
 	if (frameGraphic)
 	{
 		painter.drawPixmap(0,0, *frameGraphic);
@@ -1134,12 +1136,20 @@ void LaunchyWidget::updateVersion(int oldVersion)
 
 void LaunchyWidget::loadPosition(QPoint pt)
 {
+	// move() can emit screenChanged, which calls back into here.
+	if (adjustingPosition)
+		return;
+	adjustingPosition = true;
+
 	// Get the dimensions of the screen containing the new center point
 	QRect rect = geometry();
 	QPoint newCenter = pt + QPoint(rect.width()/2, rect.height()/2);
 	QScreen* display = screenOrPrimary(newCenter);
 	if (!display)
+	{
+		adjustingPosition = false;
 		return;
+	}
 	QRect screen = display->availableGeometry();
 
 	// See if the new position is within the screen dimensions, if not pull it inside
@@ -1159,6 +1169,7 @@ void LaunchyWidget::loadPosition(QPoint pt)
 		pt.setY(screen.center().y() - rect.height()/2);
 
 	move(pt);
+	adjustingPosition = false;
 }
 
 
@@ -1319,6 +1330,7 @@ void LaunchyWidget::applySkin(const QString& name)
 					QRect rect;
 					if (sizes.size() == 4)
 					{
+						// misc.txt is logical pixels, same as qproperty-geometry in style.qss.
 						rect.setRect(sizes[0].toInt(), sizes[1].toInt(), sizes[2].toInt(), sizes[3].toInt());
 					}
 
@@ -1421,6 +1433,9 @@ void LaunchyWidget::applySkin(const QString& name)
 
 	if (validFrame)
 	{
+		// Keep the authored pixel size. Scaling by devicePixelRatio would
+		// shrink the frame away from the skin rectangles.
+		frame.setDevicePixelRatio(1.0);
 		frameGraphic = new QPixmap(frame);
 		if (frameGraphic)
 		{
@@ -1466,8 +1481,68 @@ void LaunchyWidget::mouseReleaseEvent(QMouseEvent* event)
 {
 	event = event; // Warning removal
 	dragging = false;
+	if (clampOnDrop)
+	{
+		clampOnDrop = false;
+		loadPosition(pos());
+	}
 	hideAlternatives();
 	input->setFocus();
+}
+
+
+void LaunchyWidget::showEvent(QShowEvent* event)
+{
+	QWidget::showEvent(event);
+	hookScreenChanges();
+}
+
+
+void LaunchyWidget::hookScreenChanges()
+{
+	QWindow* window = windowHandle();
+	if (!window)
+		return;
+
+	connect(window, SIGNAL(screenChanged(QScreen*)), this, SLOT(clampToCurrentScreen()), Qt::UniqueConnection);
+	watchScreen(window->screen());
+}
+
+
+void LaunchyWidget::watchScreen(QScreen* screen)
+{
+	if (watchedScreen == screen)
+		return;
+
+	if (watchedScreen)
+		disconnect(watchedScreen, 0, this, 0);
+
+	watchedScreen = screen;
+	if (!screen)
+		return;
+
+	connect(screen, SIGNAL(availableGeometryChanged(QRect)), this, SLOT(clampToCurrentScreen()));
+	connect(screen, SIGNAL(logicalDotsPerInchChanged(qreal)), this, SLOT(clampToCurrentScreen()));
+}
+
+
+void LaunchyWidget::clampToCurrentScreen()
+{
+	if (QWindow* window = windowHandle())
+		watchScreen(window->screen());
+
+	if (adjustingPosition)
+		return;
+
+	// A drag across monitors is clamped once, on release, so the window
+	// follows the pointer until then.
+	if (dragging)
+	{
+		clampOnDrop = true;
+		return;
+	}
+
+	loadPosition(pos());
 }
 
 

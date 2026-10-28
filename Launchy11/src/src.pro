@@ -100,6 +100,7 @@ win32 {
         ../platforms/win/platform_win_util.h \
         ../platforms/win/minidump.h
     CONFIG += embed_manifest_exe
+    QMAKE_MANIFEST = $$PWD/../win/launchy.exe.manifest
     RC_FILE = ../win/launchy.rc
 	LIBS += shell32.lib \
 		user32.lib \

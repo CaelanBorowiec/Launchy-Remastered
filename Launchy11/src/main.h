@@ -36,8 +36,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AnimationLabel.h"
 #include "Fader.h"
 
+#include <QPointer>
+
 
 class QNetworkReply;
+class QScreen;
 
 
 enum CommandFlag
@@ -82,6 +85,7 @@ public:
 
 protected:
     void paintEvent(QPaintEvent* event);
+    void showEvent(QShowEvent* event);
 
 public slots:
     void focusInEvent(QFocusEvent* event);
@@ -109,6 +113,9 @@ public slots:
 	void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
 	void reloadSkin();
 
+private slots:
+	void clampToCurrentScreen();
+
 protected:
 	void saveSettings();
 
@@ -127,6 +134,8 @@ private:
 	void searchOnInput();
 	void loadPosition(QPoint pt);
 	void savePosition() { gSettings->setValue("Display/pos", pos()); }
+	void hookScreenChanges();
+	void watchScreen(QScreen* screen);
 	void doTab();
 	void doBackTab();
 	void doEnter();
@@ -168,6 +177,9 @@ private:
 	CommandHistory history;
 	bool alwaysShowLaunchy;
 	bool dragging;
+	bool clampOnDrop;
+	bool adjustingPosition;
+	QPointer<QScreen> watchedScreen;
 	QPoint dragStartPoint;
 	bool menuOpen;
 	bool optionsOpen;
