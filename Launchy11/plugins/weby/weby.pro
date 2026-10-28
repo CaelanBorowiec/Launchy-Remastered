@@ -1,11 +1,10 @@
 TEMPLATE = lib
-QT += network
+QT += network widgets core5compat
 CONFIG += plugin \
     debug_and_release
 VPATH += ../../src/
 PRECOMPILED_HEADER = precompiled.h
 INCLUDEPATH += ../../src/
-INCLUDEPATH += c:/boost/
 INCLUDEPATH += ../../common
 UI_DIR = ../../plugins/weby/
 FORMS = dlg.ui

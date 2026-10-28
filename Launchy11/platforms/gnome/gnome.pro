@@ -1,6 +1,7 @@
 TEMPLATE	= lib
 TARGET		= platform_gnome
 CONFIG		+= plugin qt_warn debug_and_release
+QT += widgets core5compat
 VPATH 		+= ../../src/ ../unix
 INCLUDEPATH     += ../../src/ ../unix
 SOURCES		= platform_x11_hotkey.cpp platform_base_hotkey.cpp \

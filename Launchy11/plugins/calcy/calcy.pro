@@ -1,4 +1,5 @@
 TEMPLATE = lib
+QT += widgets core5compat
 CONFIG += plugin \
     debug_and_release
 VPATH += ../../src/

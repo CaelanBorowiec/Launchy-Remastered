@@ -22,7 +22,6 @@
 #include <QApplication>
 #include <QX11Info>
 #include "platform_unix.h"
-#include <boost/pointer_cast.hpp>  
 #include <X11/Xlib.h>
 #include <QFileIconProvider>
 

@@ -50,8 +50,6 @@ private:
 };
 
 
-using namespace boost;
-
 class WebyPlugin : public QObject, public PluginInterface
 {
 	Q_OBJECT
@@ -66,7 +64,7 @@ public:
 	QList<Bookmark> marks;
 
 private:
-	shared_ptr<Gui> gui;
+	std::shared_ptr<Gui> gui;
 	QString iconCachePath;
 	IconCache* iconCache;
 public:

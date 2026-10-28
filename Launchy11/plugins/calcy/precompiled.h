@@ -25,15 +25,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 
 #include <QtGui>
+#include <QtWidgets>
 
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
 
 #include <stdlib.h>
-#include <boost/shared_ptr.hpp>
-
-using namespace boost;
+#include <memory>
 
 #define BOOST_SPIRIT_USE_OLD_NAMESPACE
 #include <boost/spirit/include/classic_core.hpp>

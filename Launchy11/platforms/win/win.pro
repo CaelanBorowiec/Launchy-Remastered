@@ -1,12 +1,12 @@
 TEMPLATE = lib
 TARGET = platform_win
+QT += widgets core5compat
 CONFIG += plugin \
     qt_warn \
     debug_and_release
 VPATH += ../../src/
 INCLUDEPATH += ../../src/
 INCLUDEPATH += ../../common/
-INCLUDEPATH += c:/boost/
 INCLUDEPATH += ../../win/
 VPATH += src/
 SOURCES = platform_win.cpp \
@@ -33,7 +33,7 @@ DEFINES = VC_EXTRALEAN \
     WIN32 \
     _UNICODE \
     UNICODE \
-    WINVER=0x0510 \
-    _WIN32_WINNT=0x0510 \
-    _WIN32_WINDOWS=0x0510 \
+    WINVER=0x0A00 \
+    _WIN32_WINNT=0x0A00 \
+    _WIN32_WINDOWS=0x0A00 \
     _WIN32_IE=0x0600

@@ -1,10 +1,10 @@
 TEMPLATE = lib
+QT += widgets core5compat
 CONFIG += plugin \
     debug_and_release
 VPATH += ../../src
 INCLUDEPATH += ../../src
 INCLUDEPATH += ../../common
-INCLUDEPATH += c:/boost/
 PRECOMPILED_HEADER = precompiled.h
 UI_DIR = ../../plugins/runner/
 FORMS = dlg.ui

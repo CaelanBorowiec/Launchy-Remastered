@@ -7,7 +7,7 @@ PRECOMPILED_HEADER = precompiled.h
 
 # CONFIG += qt release
 INCLUDEPATH += ../common
-QT += network
+QT += network widgets core5compat
 SOURCES = main.cpp \
     globals.cpp \
     options.cpp \
@@ -100,7 +100,6 @@ win32 {
         ../platforms/win/platform_win_util.h \
         ../platforms/win/minidump.h
     CONFIG += embed_manifest_exe
-    INCLUDEPATH += c:/boost/
     RC_FILE = ../win/launchy.rc
 	LIBS += shell32.lib \
 		user32.lib \
@@ -114,9 +113,9 @@ win32 {
         WIN32 \
         _UNICODE \
         UNICODE \
-        WINVER=0x0600 \
-        _WIN32_WINNT=0x0600 \
-        _WIN32_WINDOWS=0x0600 \
+        WINVER=0x0A00 \
+        _WIN32_WINNT=0x0A00 \
+        _WIN32_WINDOWS=0x0A00 \
         _WIN32_IE=0x0700
     if(!debug_and_release|build_pass) { 
         CONFIG(debug, debug|release):DESTDIR = ../debug/

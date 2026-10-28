@@ -25,12 +25,9 @@
 #include "platform_base_hottrigger.h"
 
 #include <QX11Info>
-#include <boost/shared_ptr.hpp>
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
-
-using namespace boost;
 
 /*
   This QAPP scans all x events for keypresses
