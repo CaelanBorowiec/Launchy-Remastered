@@ -19,12 +19,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Code Jelly"
             VALUE "FileDescription", "Launchy"
-            VALUE "FileVersion", "3.0.0"
+            VALUE "FileVersion", "3.0.0 alpha"
             VALUE "InternalName", "Launchy.exe"
             VALUE "LegalCopyright", "This is GNU Software copyright Josh Karlin"
             VALUE "OriginalFilename", "Launchy.exe"
             VALUE "ProductName", "Launchy"
-            VALUE "ProductVersion", "3.0"
+            VALUE "ProductVersion", "3.0.0 alpha"
         END
     END
     BLOCK "VarFileInfo"
