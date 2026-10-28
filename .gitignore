@@ -1,0 +1,72 @@
+# --- Operating system ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Editors / IDEs ---
+.idea/
+.vscode/
+*.suo
+*.user
+*.user.*
+*.sln.docstates
+.vs/
+
+# --- Qt / qmake (in-tree builds) ---
+*.pro.user
+*.pro.user.*
+.qmake.stash
+**/Makefile
+**/Makefile.*
+
+# uic / moc / rcc outputs (regenerated from .ui, headers, and .qrc)
+**/ui_*.h
+**/moc_*.cpp
+**/moc_predefs.h
+**/qrc_*.cpp
+
+# --- MSVC / linker intermediates ---
+*.obj
+*.o
+*.pch
+*.res
+*.pdb
+*.ilk
+*.exp
+*.idb
+*.ipdb
+*.iobj
+
+# --- Launchy qmake build trees ---
+Launchy11/src/build/
+Launchy11/src/release/
+Launchy11/plugins/**/release/
+Launchy11/plugins/**/debug/
+
+# --- Windows deploy output (build + windeployqt; not Launchy11/win/ redistributables) ---
+Launchy11/release/*.exe
+Launchy11/release/*.dll
+Launchy11/release/*.pdb
+Launchy11/release/*.manifest
+Launchy11/release/platforms/
+Launchy11/release/plugins/
+Launchy11/release/generic/
+Launchy11/release/iconengines/
+Launchy11/release/imageformats/
+Launchy11/release/networkinformation/
+Launchy11/release/styles/
+Launchy11/release/tls/
+
+Launchy11/debug/*.exe
+Launchy11/debug/*.dll
+Launchy11/debug/*.pdb
+
+# Skins copied into output dirs (source of truth: Launchy11/skins/)
+Launchy11/release/skins/*/
+Launchy11/debug/skins/*/
+
+# Debug tree except legacy tracked Mercury snapshot under debug/skins/Mercury/
+Launchy11/debug/*
+!Launchy11/debug/skins/
+Launchy11/debug/skins/*
+!Launchy11/debug/skins/Mercury/
