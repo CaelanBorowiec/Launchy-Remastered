@@ -20,93 +20,267 @@
 #include "precompiled.h"
 #include "calcy.h"
 
+#include <cmath>
+#include <limits>
 
-using namespace boost::spirit;
-using namespace phoenix;
 
-
-struct calc_closure : boost::spirit::closure<calc_closure, double>
+namespace
 {
-	member1 val;
-};
 
-
-struct pow_
+// Same expressions the Boost.Spirit Classic grammar accepted:
+//   expression = term *( '+' term | '-' term )
+//   term       = factor *( '*' factor | '/' factor )
+//   factor     = number | '(' expression ')' | '-' factor | '+' factor
+// number is an unsigned real, including a fraction and an exponent (1.5e-2).
+// A prefix that parses is kept even when trailing input is left over, and a
+// query that does not start with an expression evaluates to 0.
+class Calculator
 {
-	template <typename X, typename Y>
-	struct result { typedef X type; };
-	
-	template <typename X, typename Y>
-	X operator()(X x, Y y) const
+public:
+	explicit Calculator(const QString& text)
+		: s(text), i(0)
 	{
-		using namespace std;
-		return pow(x, y);
+	}
+
+	double evaluate()
+	{
+		double value = 0;
+		if (!expression(value))
+			return 0;
+		return value;
+	}
+
+private:
+	const QString& s;
+	qsizetype i;
+
+	static bool isDigit(QChar c)
+	{
+		return c >= QLatin1Char('0') && c <= QLatin1Char('9');
+	}
+
+	static int digit(QChar c)
+	{
+		return c.unicode() - QLatin1Char('0').unicode();
+	}
+
+	void skip()
+	{
+		while (i < s.size() && s[i].isSpace())
+			++i;
+	}
+
+	bool eat(QChar c)
+	{
+		skip();
+		if (i < s.size() && s[i] == c)
+		{
+			++i;
+			return true;
+		}
+		return false;
+	}
+
+	bool expression(double& out)
+	{
+		double value = 0;
+		if (!term(value))
+			return false;
+
+		for (;;)
+		{
+			const qsizetype save = i;
+			if (eat(QLatin1Char('+')))
+			{
+				double rhs = 0;
+				if (!term(rhs))
+				{
+					i = save;
+					break;
+				}
+				value += rhs;
+			}
+			else if (eat(QLatin1Char('-')))
+			{
+				double rhs = 0;
+				if (!term(rhs))
+				{
+					i = save;
+					break;
+				}
+				value -= rhs;
+			}
+			else
+				break;
+		}
+
+		out = value;
+		return true;
+	}
+
+	bool term(double& out)
+	{
+		double value = 0;
+		if (!factor(value))
+			return false;
+
+		for (;;)
+		{
+			const qsizetype save = i;
+			if (eat(QLatin1Char('*')))
+			{
+				double rhs = 0;
+				if (!factor(rhs))
+				{
+					i = save;
+					break;
+				}
+				value *= rhs;
+			}
+			else if (eat(QLatin1Char('/')))
+			{
+				double rhs = 0;
+				if (!factor(rhs))
+				{
+					i = save;
+					break;
+				}
+				value /= rhs;
+			}
+			else
+				break;
+		}
+
+		out = value;
+		return true;
+	}
+
+	bool factor(double& out)
+	{
+		const qsizetype save = i;
+		skip();
+
+		double value = 0;
+		if (number(value))
+		{
+			out = value;
+			return true;
+		}
+		i = save;
+
+		if (eat(QLatin1Char('(')))
+		{
+			if (expression(value) && eat(QLatin1Char(')')))
+			{
+				out = value;
+				return true;
+			}
+			i = save;
+			return false;
+		}
+		if (eat(QLatin1Char('-')))
+		{
+			if (factor(value))
+			{
+				out = -value;
+				return true;
+			}
+			i = save;
+			return false;
+		}
+		if (eat(QLatin1Char('+')))
+		{
+			if (factor(value))
+			{
+				out = value;
+				return true;
+			}
+			i = save;
+			return false;
+		}
+		return false;
+	}
+
+	// Unsigned real, as ureal_p parsed it. A leading or trailing dot is
+	// allowed. An 'e'/'E' that is not followed by an exponent rejects the
+	// whole number so the caller can backtrack.
+	bool number(double& out)
+	{
+		const qsizetype start = i;
+		qsizetype pos = i;
+		const qsizetype n = s.size();
+
+		qsizetype intDigits = 0;
+		while (pos < n && isDigit(s[pos]))
+		{
+			++pos;
+			++intDigits;
+		}
+
+		qsizetype fracDigits = 0;
+		if (pos < n && s[pos] == QLatin1Char('.'))
+		{
+			++pos;
+			while (pos < n && isDigit(s[pos]))
+			{
+				++pos;
+				++fracDigits;
+			}
+		}
+
+		if (intDigits == 0 && fracDigits == 0)
+			return false;
+
+		const qsizetype mantissaEnd = pos;
+		double expSign = 1;
+		double expAbs = 0;
+		bool hasExp = false;
+		if (pos < n && (s[pos] == QLatin1Char('e') || s[pos] == QLatin1Char('E')))
+		{
+			qsizetype expPos = pos + 1;
+			if (expPos < n && (s[expPos] == QLatin1Char('+') || s[expPos] == QLatin1Char('-')))
+			{
+				if (s[expPos] == QLatin1Char('-'))
+					expSign = -1;
+				++expPos;
+			}
+			if (expPos >= n || !isDigit(s[expPos]))
+				return false;
+
+			const double maxExp = std::numeric_limits<double>::max() / 10.0;
+			while (expPos < n && isDigit(s[expPos]))
+			{
+				const int d = digit(s[expPos]);
+				if (expAbs > maxExp)
+					return false;
+				expAbs = expAbs * 10.0 + d;
+				++expPos;
+			}
+
+			hasExp = true;
+			pos = expPos;
+		}
+
+		bool ok = false;
+		double value = s.mid(start, mantissaEnd - start).toDouble(&ok);
+		if (!ok)
+			return false;
+		if (hasExp)
+			value *= std::pow(10.0, expSign * expAbs);
+
+		i = pos;
+		out = value;
+		return true;
 	}
 };
 
-
-//  Notice how power(x, y) is lazily implemented using Phoenix function.
-function<pow_> power;
-
-
-struct calculator : public grammar<calculator, calc_closure::context_t>
-{
-	template <typename ScannerT>
-	struct definition
-	{
-		definition(calculator const& self)
-		{
-			top = expression[self.val = arg1];
-		
-			expression
-				=   term[expression.val = arg1]
-		>> *(   ('+' >> term[expression.val += arg1])
-						|   ('-' >> term[expression.val -= arg1])
-						)
-				;
-		
-			term
-				=   factor[term.val = arg1]
-		>> *(   ('*' >> factor[term.val *= arg1])
-						|   ('/' >> factor[term.val /= arg1])
-						)
-				;
-		
-			factor
-				=   ureal_p[factor.val = arg1]
-				|   '(' >> expression[factor.val = arg1] >> ')'
-				|   ('-' >> factor[factor.val = -arg1])
-				|   ('+' >> factor[factor.val = arg1])
-				;
-		}
-	//		const uint_parser<bigint, 10, 1, -1> bigint_parser;
-		typedef rule<ScannerT, calc_closure::context_t> rule_t;
-		rule_t expression, term, factor;
-		rule<ScannerT> top;
-	
-		rule<ScannerT> const&
-		start() const { return top; }
-	};
-};
+} // namespace
 
 
 bool DoCalculation(QString str, double& result)
 {
-	// Our parser
-	calculator calc;
-	double n = 0;
-
-
-	wchar_t* wstr = new wchar_t[str.length()+1];
-	str.toWCharArray(wstr);
-	wstr[str.length()] = 0;
-	parse_info<const wchar_t*> info = parse(wstr, calc[var(n) = arg1], space_p);
-	delete wstr;
-
-	//FOR SOME REASON IN LINUX info.full is false
-	//if (!info.full)
-	//	return false;
-	result = n;
+	Calculator calc(str);
+	result = calc.evaluate();
 	return true;
 }
 

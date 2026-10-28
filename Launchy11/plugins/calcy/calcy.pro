@@ -4,7 +4,6 @@ CONFIG += plugin \
     debug_and_release
 VPATH += ../../src/
 INCLUDEPATH += ../../src/
-INCLUDEPATH += c:/boost/
 PRECOMPILED_HEADER = precompiled.h
 UI_DIR = ../../plugins/calcy/
 HEADERS = plugin_interface.h \
