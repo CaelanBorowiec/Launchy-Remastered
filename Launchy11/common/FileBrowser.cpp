@@ -129,7 +129,7 @@ void FileBrowser::setBrowseFileFilters(const QString& filters)
 		// Update the filters in the completer
 		QStringList dirFilters;
 
-		QStringList filterList = mBrowseFilters.split(";;", QString::SkipEmptyParts);
+		QStringList filterList = mBrowseFilters.split(";;", Qt::SkipEmptyParts);
 		if (filterList.empty() == false)
 		{
 			// Remove the All Files filter
@@ -153,7 +153,7 @@ void FileBrowser::setBrowseFileFilters(const QString& filters)
 					int numChars = filter.lastIndexOf(")") - startPos;
 
 					filter = filter.mid(startPos, numChars);
-					dirFilters += filter.split(' ', QString::SkipEmptyParts);
+					dirFilters += filter.split(' ', Qt::SkipEmptyParts);
 				}
 			}
 		}

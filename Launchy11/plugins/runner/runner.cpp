@@ -31,18 +31,18 @@ void RunnerPlugin::init()
 	{
 		set->beginWriteArray("runner/cmds");
 		set->setArrayIndex(0);
-		#ifdef Q_WS_WIN
+		#ifdef Q_OS_WIN
 		set->setValue("name", "cmd");
 		set->setValue("file", "C:\\Windows\\System32\\cmd.exe");
 		set->setValue("args", "/K $$");
 		#endif
-		#ifdef Q_WS_X11
+		#ifdef Q_OS_LINUX
 		set->setValue("name", "cmd");
 		set->setValue("file", "/usr/bin/xterm");
 		set->setValue("args", "-hold -e $$");
 		#endif
                 /*
-                #ifdef Q_WS_MAC
+                #ifdef Q_OS_MAC
                 set->setValue("name", "cmd");
                 set->setValue("file", "")
                 #endif
@@ -87,7 +87,7 @@ QString RunnerPlugin::getIcon()
 QString RunnerPlugin::getIcon(QString file)
 {
     file = file; // Warning removal
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 	QRegExp rx("\\.(exe|lnk)$", Qt::CaseInsensitive);
     if (rx.indexIn(file) != -1)
 		return file;

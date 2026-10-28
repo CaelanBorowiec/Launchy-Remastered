@@ -42,7 +42,7 @@ OptionsDialog::OptionsDialog(QWidget * parent) :
 	restoreGeometry(windowGeometry);
 	tabWidget->setCurrentIndex(currentTab);
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 	about_homepage->setText(about_homepage->text() + \
 		"<p><br>If you would like to uninstall Launchy, please close Launchy and run \"Uninstall Launchy\" from the start menu.</br></p>");
 #endif
@@ -77,7 +77,7 @@ OptionsDialog::OptionsDialog(QWidget * parent) :
 	genFadeOut->setValue(gSettings->value("GenOps/fadeout", 20).toInt());
 	connect(genOpaqueness, SIGNAL(sliderMoved(int)), gMainWidget, SLOT(setOpaqueness(int)));
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
 	metaKeys << tr("") << tr("Alt") << tr("Command") << tr("Shift") << tr("Control") <<
 				tr("Command+Alt") << tr("Command+Shift") << tr("Command+Control");
 #else

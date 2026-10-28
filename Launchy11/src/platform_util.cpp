@@ -12,7 +12,7 @@ PlatformBase * loadPlatform()
 	QList<QString> files;
 	QString file;
 
-	#ifdef Q_WS_WIN
+	#ifdef Q_OS_WIN
 	// Look for the platform file in the same directory as the executable
 	wchar_t module_name[MAX_PATH+1];
 	GetModuleFileNameW(0, module_name, MAX_PATH);
@@ -22,7 +22,7 @@ PlatformBase * loadPlatform()
 	SetCurrentDirectory(filePath.utf16());
 	files += "platform_win.dll";
 	#endif
-	#ifdef Q_WS_X11
+	#ifdef Q_OS_LINUX
 	files += "libplatform_unix.so";
 	files += QString(PLATFORMS_PATH) + "/libplatform_unix.so";
 	#endif

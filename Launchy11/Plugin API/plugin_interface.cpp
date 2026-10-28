@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 void runProgram(QString path, QString args) {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 	SHELLEXECUTEINFO ShExecInfo;
 
 	ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
@@ -49,11 +49,11 @@ void runProgram(QString path, QString args) {
 	ShellExecuteEx(&ShExecInfo);	
 #endif
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
 
 #endif
 
-#ifdef Q_WS_X11
+#ifdef Q_OS_LINUX
 
 #endif
 

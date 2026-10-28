@@ -56,7 +56,7 @@ public:
 	void endDialog(bool accept);
 	void init();
 	QString getIcon();
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 	void indexIE(QString path, QList<CatItem>* items);
 #endif
 };

@@ -19,10 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 #include "precompiled.h"
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QScreen>
+#include <QVersionNumber>
 
-#ifdef Q_WS_MAC
-#include <QMacStyle>
-#endif
 #include "icon_delegate.h"
 #include "main.h"
 #include "globals.h"
@@ -31,7 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "FileSearch.h"
 
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 void SetForegroundWindowEx(HWND hWnd)
 {
 	// Attach foreground window thread to our thread
@@ -50,13 +51,13 @@ void SetForegroundWindowEx(HWND hWnd)
 
 
 LaunchyWidget::LaunchyWidget(CommandFlags command) :
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 	QWidget(NULL, Qt::FramelessWindowHint | Qt::Tool),
 #endif
-#ifdef Q_WS_X11
+#ifdef Q_OS_LINUX
 	QWidget(NULL, Qt::FramelessWindowHint | Qt::Tool),
 #endif
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
 	QWidget(NULL, Qt::FramelessWindowHint),
 #endif
 
@@ -69,10 +70,10 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
 {
 	setObjectName("launchy");
 	setWindowTitle(tr("Launchy"));
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 	setWindowIcon(QIcon(":/resources/launchy128.png"));
 #endif
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
 	setWindowIcon(QIcon("../Resources/launchy_icon_mac.icns"));
 	//setAttribute(Qt::WA_MacAlwaysShowToolWindow);
 #endif
@@ -117,9 +118,6 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
 	output->setAlignment(Qt::AlignHCenter);
 
 	input = new CharLineEdit(this);
-#ifdef Q_WS_MAC
-	QMacStyle::setFocusRectPolicy(input, QMacStyle::FocusDisabled);
-#endif
 	input->setObjectName("input");
 	connect(input, SIGNAL(keyPressed(QKeyEvent*)), this, SLOT(inputKeyPressEvent(QKeyEvent*)));
 	connect(input, SIGNAL(focusIn(QFocusEvent*)), this, SLOT(focusInEvent(QFocusEvent*)));
@@ -231,16 +229,28 @@ LaunchyWidget::~LaunchyWidget()
 }
 
 
+static QScreen* screenOrPrimary(const QPoint& point)
+{
+	QScreen* screen = QGuiApplication::screenAt(point);
+	if (!screen)
+		screen = QGuiApplication::primaryScreen();
+	return screen;
+}
+
+
 void LaunchyWidget::executeStartupCommand(int command)
 {
 	if (command & ResetPosition)
 	{
 		QRect r = geometry();
-		int primary = qApp->desktop()->primaryScreen();
-		QRect scr = qApp->desktop()->availableGeometry(primary);
+		QScreen* display = QGuiApplication::primaryScreen();
+		if (display)
+		{
+			QRect scr = display->availableGeometry();
 
-		QPoint pt(scr.width()/2 - r.width()/2, scr.height()/2 - r.height()/2);
-		move(pt);
+			QPoint pt(scr.width()/2 - r.width()/2, scr.height()/2 - r.height()/2);
+			move(pt);
+		}
 	}
 
 	if (command & ResetSkin)
@@ -400,19 +410,25 @@ void LaunchyWidget::updateAlternatives(bool resetSelection)
 	rect.translate(pos());
 
 	// Is there room for the dropdown box?
-	if (rect.y() + rect.height() > qApp->desktop()->height())
+	QScreen* display = screenOrPrimary(pos());
+	if (display)
 	{
-		// Only move it if there's more space above
-		// In both cases, ensure it doesn't spill off the screen
-		if (pos().y() + input->pos().y() > qApp->desktop()->height() / 2)
+		const QRect avail = display->availableGeometry();
+		const int availBottom = avail.y() + avail.height();
+		if (rect.y() + rect.height() > availBottom)
 		{
-			rect.moveTop(pos().y() + input->pos().y() - rect.height());
-			if (rect.top() < 0)
-				rect.setTop(0);
-		}
-		else
-		{
-			rect.setBottom(qApp->desktop()->height());
+			// Only move it if there's more space above
+			// In both cases, ensure it doesn't spill off the screen
+			if (pos().y() + input->pos().y() > avail.y() + avail.height() / 2)
+			{
+				rect.moveTop(pos().y() + input->pos().y() - rect.height());
+				if (rect.top() < avail.top())
+					rect.setTop(avail.top());
+			}
+			else
+			{
+				rect.setBottom(availBottom);
+			}
 		}
 	}
 
@@ -483,7 +499,7 @@ void LaunchyWidget::launchItem(CatItem& item)
 				args += inputData[i].getText() + " ";
 
 /* UPDATE
-#ifdef Q_WS_X11
+#ifdef Q_OS_LINUX
 		if (!platform->Execute(item.fullPath, args))
 			runProgram(item.fullPath, args);
 #else
@@ -1018,44 +1034,73 @@ void LaunchyWidget::catalogBuilt()
 }
 
 
-void LaunchyWidget::checkForUpdate()
+static bool releaseIsNewer(const QString& tag, const QString& current)
 {
-	http = new QHttp(this);
-	verBuffer = new QBuffer(this);
-	counterBuffer = new QBuffer(this);
-	verBuffer->open(QIODevice::ReadWrite);
-	counterBuffer->open(QIODevice::ReadWrite);
+	QString normalized = tag.trimmed();
+	if (normalized.startsWith(QLatin1Char('v'), Qt::CaseInsensitive))
+		normalized = normalized.mid(1);
 
-	connect(http, SIGNAL(done( bool)), this, SLOT(httpGetFinished(bool)));
-	http->setHost("www.launchy.net");
-	http->get("http://www.launchy.net/version2.html", verBuffer);
+	qsizetype tagSuffix = 0;
+	qsizetype currentSuffix = 0;
+	const QVersionNumber tagVersion = QVersionNumber::fromString(normalized, &tagSuffix);
+	const QVersionNumber currentVersion = QVersionNumber::fromString(current.trimmed(), &currentSuffix);
+	if (tagVersion.isNull())
+		return false;
+
+	const int compared = QVersionNumber::compare(tagVersion, currentVersion);
+	if (compared > 0)
+		return true;
+	if (compared < 0)
+		return false;
+
+	const QString tagExtra = normalized.mid(tagSuffix).trimmed();
+	const QString currentExtra = current.trimmed().mid(currentSuffix).trimmed();
+	return tagExtra.isEmpty() && !currentExtra.isEmpty();
 }
 
 
-void LaunchyWidget::httpGetFinished(bool error)
+void LaunchyWidget::checkForUpdate()
 {
-	if (!error)
-	{
-		QString str(verBuffer->data());
-		int ver = str.toInt();
-		if (ver > LAUNCHY_VERSION)
-		{
-			QMessageBox box;
-			box.setIcon(QMessageBox::Information);
-			box.setTextFormat(Qt::RichText);
-			box.setWindowTitle(tr("A new version of Launchy is available"));
-			box.setText(tr("A new version of Launchy is available.\n\nYou can download it at \
-						   <qt><a href=\"http://www.launchy.net/\">http://www.launchy.net</a></qt>"));
-			box.exec();
-		}
-		if (http != NULL)
-			delete http;
-		http = NULL;
-	}
-	verBuffer->close();
-	counterBuffer->close();
-	delete verBuffer;
-	delete counterBuffer;
+	QNetworkAccessManager* http = new QNetworkAccessManager(this);
+	connect(http, SIGNAL(finished(QNetworkReply*)), this, SLOT(httpGetFinished(QNetworkReply*)));
+
+	QNetworkRequest request(QUrl("https://api.github.com/repos/CaelanBorowiec/Launchy-11/releases/latest"));
+	request.setHeader(QNetworkRequest::UserAgentHeader, "Launchy");
+	request.setRawHeader("Accept", "application/vnd.github+json");
+	http->get(request);
+}
+
+
+void LaunchyWidget::httpGetFinished(QNetworkReply* reply)
+{
+	if (!reply)
+		return;
+
+	QNetworkAccessManager* http = reply->manager();
+	const QByteArray payload = reply->readAll();
+	const int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+	const bool failed = reply->error() != QNetworkReply::NoError || status != 200;
+	reply->deleteLater();
+	if (http)
+		http->deleteLater();
+	if (failed)
+		return;
+
+	const QJsonDocument doc = QJsonDocument::fromJson(payload);
+	if (!doc.isObject())
+		return;
+
+	const QString tag = doc.object().value("tag_name").toString();
+	if (!releaseIsNewer(tag, QLatin1String(LAUNCHY_VERSION_STRING)))
+		return;
+
+	QMessageBox box;
+	box.setIcon(QMessageBox::Information);
+	box.setTextFormat(Qt::RichText);
+	box.setWindowTitle(tr("A new version of Launchy is available"));
+	box.setText(tr("A new version of Launchy is available.\n\nYou can download it at \
+						   <qt><a href=\"https://github.com/CaelanBorowiec/Launchy-11/releases\">https://github.com/CaelanBorowiec/Launchy-11/releases</a></qt>"));
+	box.exec();
 }
 
 
@@ -1093,7 +1138,10 @@ void LaunchyWidget::loadPosition(QPoint pt)
 	// Get the dimensions of the screen containing the new center point
 	QRect rect = geometry();
 	QPoint newCenter = pt + QPoint(rect.width()/2, rect.height()/2);
-	QRect screen = qApp->desktop()->availableGeometry(newCenter);
+	QScreen* display = screenOrPrimary(newCenter);
+	if (!display)
+		return;
+	QRect screen = display->availableGeometry();
 
 	// See if the new position is within the screen dimensions, if not pull it inside
 	if (newCenter.x() < screen.left())
@@ -1474,7 +1522,7 @@ void LaunchyWidget::showOptionsDialog()
 		optionsOpen = true;
 		OptionsDialog options(this);
 		options.setObjectName("options");
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 		// need to use this method in Windows to ensure that keyboard focus is set when 
 		// being activated via a message from another instance of Launchy
 		SetForegroundWindowEx(options.winId());
@@ -1497,7 +1545,7 @@ void LaunchyWidget::shouldDonate()
 
 	if (donateTime <= time)
 	{
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 		runProgram("http://www.launchy.net/donate.html", "");
 #endif
 		QDateTime def;
@@ -1537,11 +1585,11 @@ void LaunchyWidget::showLaunchy(bool noFade)
 
 	fader->fadeIn(noFade || alwaysShowLaunchy);
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 	// need to use this method in Windows to ensure that keyboard focus is set when 
 	// being activated via a hook or message from another instance of Launchy
 	SetForegroundWindowEx(winId());
-#elif defined(Q_WS_X11)
+#elif defined(Q_OS_LINUX)
 	/* Fix for bug 2994680: Not sure why this is necessary, perhaps someone with more
 	   Qt experience can tell, but doing these two calls will force the window to actually
 	   get keyboard focus when it is activated. It seems from the bug reports that this
@@ -1608,13 +1656,13 @@ int LaunchyWidget::getHotkey() const
 	int hotkey = gSettings->value("GenOps/hotkey", -1).toInt();
 	if (hotkey == -1)
 	{
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 		int meta = Qt::AltModifier;
 #endif
-#ifdef  Q_WS_X11
+#ifdef  Q_OS_LINUX
 		int meta = Qt::ControlModifier;
 #endif
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
 		int meta = Qt::MetaModifier;
 #endif
 		hotkey = gSettings->value("GenOps/hotkeyModifier", meta).toInt() |
@@ -1753,7 +1801,7 @@ int main(int argc, char *argv[])
 
 	qApp->setStyleSheet("file:///:/resources/basicskin.qss");
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 	LaunchyWidget* widget = createLaunchyWidget(command);
 #else
 	LaunchyWidget* widget = new LaunchyWidget(command);

@@ -29,14 +29,13 @@ class Process : public QObject {
 	Q_OBJECT
 public:
 	QString query;
-	QHttp http;
-	QBuffer resBuffer;
+	QNetworkAccessManager http;
 	QString result;
 	QEventLoop loop;
 	Process(QString url, QString matchExpression);
 	void run();
 public slots:
-	void httpGetFinished(bool error);
+	void httpGetFinished();
 
 private:
 	QString url;

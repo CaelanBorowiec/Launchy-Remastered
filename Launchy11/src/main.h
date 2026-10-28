@@ -37,6 +37,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Fader.h"
 
 
+class QNetworkReply;
+
+
 enum CommandFlag
 {
 	None = 0,
@@ -91,7 +94,7 @@ public slots:
 	void onHotkey();
 	void dropTimeout();
 	void setOpaqueness(int level);
-	void httpGetFinished(bool result);
+	void httpGetFinished(QNetworkReply* reply);
 	void catalogProgressUpdated(int);
 	void catalogBuilt();
 	void buildCatalog();
@@ -172,10 +175,6 @@ private:
 
 	IconDelegate* listDelegate;
 	QAbstractItemDelegate* defaultListDelegate;
-
-	QHttp *http;
-	QBuffer *verBuffer;
-	QBuffer *counterBuffer;
 };
 
 

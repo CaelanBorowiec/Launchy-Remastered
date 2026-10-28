@@ -33,7 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <stdlib.h>
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #define _WIN32_WINNT 0x0A00
 #define _WIN32_IE 0x0700
 #include <windows.h>

@@ -191,7 +191,7 @@ int VerbyPlugin::launchItem(QList<InputData>* inputData, CatItem* item)
 			info.setFile(info.symLinkTarget());
 		}
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 		runProgram("explorer.exe", "\"" + QDir::toNativeSeparators(info.absolutePath()) + "\"");
 #endif
 	}
@@ -199,13 +199,13 @@ int VerbyPlugin::launchItem(QList<InputData>* inputData, CatItem* item)
 	{
 		QFileInfo info(noun);
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 		runProgram("explorer.exe", "\"" + QDir::toNativeSeparators(info.absolutePath()) + "\"");
 #endif
 	}
 	else if (verb == "Run as")
 	{
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 		SHELLEXECUTEINFO shellExecInfo;
 
 		shellExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
@@ -228,7 +228,7 @@ int VerbyPlugin::launchItem(QList<InputData>* inputData, CatItem* item)
 	}
 	else if (verb == "File properties")
 	{
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 		SHELLEXECUTEINFO shellExecInfo;
 
 		shellExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);

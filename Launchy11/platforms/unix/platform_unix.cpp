@@ -186,7 +186,7 @@ void PlatformUnix::alterItem(CatItem* item) {
     exe.replace("%c", name);
     exe.replace("%k", item->fullPath);
 
-    QStringList allExe = exe.trimmed().split(" ",QString::SkipEmptyParts);
+    QStringList allExe = exe.trimmed().split(" ",Qt::SkipEmptyParts);
     if (allExe.size() == 0 || allExe[0].size() == 0 )
             return;
     exe = allExe[0];

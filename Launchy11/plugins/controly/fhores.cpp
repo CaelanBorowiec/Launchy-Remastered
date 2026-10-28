@@ -49,7 +49,7 @@ QString FhoRes::getResourceString(QString &resourceIdentifier) {
 
 	QString resourceString;
 
-	QStringList split = resourceIdentifier.split(",", QString::SkipEmptyParts);
+	QStringList split = resourceIdentifier.split(",", Qt::SkipEmptyParts);
 	if (split.size() == 2) {
 		QString resourceName = split.at(0);
 		QString resourceIdStr = split.at(1);

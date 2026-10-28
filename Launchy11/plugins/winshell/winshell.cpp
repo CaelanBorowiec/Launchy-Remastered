@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <QFile>
 #include <QDir>
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #include <windows.h>
 #include <shlobj.h>
 #include <tchar.h>
@@ -53,7 +53,7 @@ void winshellPlugin::getName(QString* str)
 
 QString winshellPlugin::getIcon()
 {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 	return qApp->applicationDirPath() + "/plugins/icons/winshell.ico";
 #endif
 }
@@ -124,19 +124,19 @@ void winshellPlugin::getResults(QList<InputData>* id, QList<CatItem>* results)
 }
 
 void CopyDir(QString f1, QString f2) {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 	runProgram("utilities/winshell/copydir.bat", f1 + " " + f2);
 #endif
 }
 
 void CopyFile(QString f1, QString f2) {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 	runProgram("utilities/winshell/copyfile.bat", f1 + " " + f2);
 #endif
 }
 
 void Move(QString f1, QString f2) {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 	runProgram("utilities/winshell/move.bat", f1 + " " + f2);
 #endif
 }

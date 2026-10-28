@@ -79,7 +79,7 @@ QString controlyPlugin::getIconPath() const
 }
 
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 void controlyPlugin::getApps(QList<CatItem>* items) {
 	ControlPanelItemFinder *pCplFinder = new ControlPanelItemFinder(HASH_controly, &iconCreator, items);
 	pCplFinder->findItems();
@@ -186,7 +186,10 @@ int controlyPlugin::launchItem(QList<InputData>* inputData, CatItem* item)
 			// Constant special item ID list (CSIDL)
 
 			// shell instance object (special shell extension folder), e.g. 'csidl:0x0014.controly' ('shellinstance:0x0014')
-			QString folderId = path.mid(strlen("csidl:"), strlen(path.toAscii())-strlen("csidl:")-strlen(".controly")); // e.g. 0x0014 = CSIDL_FONTS;
+			const int encodedLength = int(path.toLatin1().size());
+			const int prefixLength = int(strlen("csidl:"));
+			const int suffixLength = int(strlen(".controly"));
+			QString folderId = path.mid(prefixLength, encodedLength - prefixLength - suffixLength); // e.g. 0x0014 = CSIDL_FONTS;
 			bool ok;
 			int folderIdx = folderId.toLong(&ok, 16);
 			if (ok) {

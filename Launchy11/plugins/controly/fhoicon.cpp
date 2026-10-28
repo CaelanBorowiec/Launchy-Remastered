@@ -118,7 +118,7 @@ QImage FhoIcon::getDefaultIconFromResource(QString fileName) {
 
 QImage FhoIcon::getIconFromResource(QString resourceDefinition) {
 	if (resourceDefinition.contains(',')) {
-		QStringList split = resourceDefinition.split(',', QString::SkipEmptyParts);
+		QStringList split = resourceDefinition.split(',', Qt::SkipEmptyParts);
 		if (split.size() == 2) {
 			// e.g. "my.dll,5" or "my.dll,-5"
 			QString fileName = split.at(0);
@@ -158,7 +158,7 @@ QImage FhoIcon::getIconFromImage(QString fileName) {
 		// in case this method fails and returns an empty image, we give QImage(iconFile) a try before potentially returning a default icon finally
 	}
 	
-	if (supportedFormats.contains(type.toAscii())) {
+	if (supportedFormats.contains(type.toLatin1())) {
 		return QImage(fileName);
 	} else {
 		return getDefaultIcon();
@@ -428,7 +428,7 @@ void FhoIconCreator::setImageType(QString type, QString fileExtension) {
 		type = fileExtension;
 	}
 
-	if (supportedFormats.contains(type.toAscii())) {
+	if (supportedFormats.contains(type.toLatin1())) {
 		imageType = type;
 		imageFileExtension = fileExtension;
 	}
@@ -436,7 +436,8 @@ void FhoIconCreator::setImageType(QString type, QString fileExtension) {
 
 QString FhoIconCreator::saveImage(QImage &image, QString fileName) {
 	if (!image.isNull()) {
-		image.save(fileName, imageType.isEmpty() ? 0 : imageType.toAscii());
+		const QByteArray format = imageType.toLatin1();
+		image.save(fileName, format.isEmpty() ? nullptr : format.constData());
 		return fileName;
 	} else {
 		return defaultImageFileName;

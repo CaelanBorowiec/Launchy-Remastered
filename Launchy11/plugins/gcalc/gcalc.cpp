@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "precompiled.h"
+#include <QRegExp>
 #include "gcalc.h"
 
 
@@ -35,35 +36,41 @@ void Process::run()
 {
 	if (query.length() > 0)
 	{
-		QString webQuery = "/search?source=launchy&q=";
-		query = QUrl::toPercentEncoding(query);
-		webQuery += query;
-		//	qDebug() << webQuery;
-		resBuffer.open(QIODevice::ReadWrite);
-
-		connect(&http, SIGNAL(done(bool)), this, SLOT(httpGetFinished(bool)));
-		http.setHost("www.google.com");
-		http.get(webQuery, &resBuffer);
+		QString webQuery = "http://www.google.com/search?source=launchy&q=";
+		webQuery += QString::fromLatin1(QUrl::toPercentEncoding(query));
 		id = ++currentId;
-		loop.exec();
+
+		QNetworkRequest request{QUrl(webQuery)};
+		request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+			QNetworkRequest::NoLessSafeRedirectPolicy);
+		QNetworkReply* reply = http.get(request);
+		connect(reply, SIGNAL(finished()), this, SLOT(httpGetFinished()));
+		if (!reply->isFinished())
+			loop.exec();
 	}
 }
 
 
-void Process::httpGetFinished(bool error)
+void Process::httpGetFinished()
 {
+	QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
+	const bool error = !reply || reply->error() != QNetworkReply::NoError;
+	const QByteArray payload = reply ? reply->readAll() : QByteArray();
+	if (reply)
+		reply->deleteLater();
+
 	if (id != currentId)
 	{
 		result.clear();
 	}
 	else if (!error)
 	{
-		result = resBuffer.data();
+		result = QString::fromUtf8(payload);
 		QRegExp regex_res(matchExpression, Qt::CaseInsensitive);
 		regex_res.setMinimal(true);
 		if (regex_res.indexIn(result) != -1)
 		{
-			result = regex_res.cap(regex_res.numCaptures());
+			result = regex_res.cap(regex_res.captureCount());
 			result = result.trimmed();
 		}
 		else

@@ -32,19 +32,18 @@ class Suggest : public QObject
 {
 	Q_OBJECT
 public:
-	Suggest();
 	void run(QString url, QString query);
 
 	QStringList results;
 
 public slots:
-	void httpGetFinished(bool error);
+	void httpGetFinished();
 
 private:
 	QString query;
-	QHttp http;
+	QNetworkAccessManager http;
 	QEventLoop loop;
-	int id;
+	int id = 0;
 	static int currentId;	
 
 };
@@ -92,7 +91,7 @@ public:
 	QString getFirefoxPath();
 	void indexFirefox(QString path, QList<CatItem>* items);
 	QString getIcon();
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 	void indexIE(QString path, QList<CatItem>* items);
 #endif
 };

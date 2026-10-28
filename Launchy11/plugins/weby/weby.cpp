@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "precompiled.h"
+#include <QRegExp>
 #include "weby.h"
 #include "IconCache.h"
 #include "gui.h"
@@ -25,27 +26,26 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 int Suggest::currentId = 0;
 
-Suggest::Suggest()
-{
-	connect(&http, SIGNAL(done(bool)), this, SLOT(httpGetFinished(bool)));
-}
-
-
 void Suggest::run(QString url, QString query)
 {
 	this->query = query;
-	url.replace("%s", QUrl::toPercentEncoding(query));
-	QUrl u = QUrl::fromPercentEncoding(url.toAscii());
+	url.replace("%s", QString::fromLatin1(QUrl::toPercentEncoding(query)));
+	QUrl u = QUrl::fromPercentEncoding(url.toLatin1());
 
-	http.setHost(u.host(), u.port(80));
-	http.get(u.toEncoded(QUrl::RemoveScheme | QUrl::RemoveAuthority));
 	id = ++currentId;
-	loop.exec();
+	QNetworkRequest request(u);
+	request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
+		QNetworkRequest::NoLessSafeRedirectPolicy);
+	QNetworkReply* reply = http.get(request);
+	connect(reply, SIGNAL(finished()), this, SLOT(httpGetFinished()));
+	if (!reply->isFinished())
+		loop.exec();
 }
 
 
-void Suggest::httpGetFinished(bool error)
+void Suggest::httpGetFinished()
 {
+	QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
 	if (id == currentId)
 	{
 		if (query.count() > 0)
@@ -53,12 +53,12 @@ void Suggest::httpGetFinished(bool error)
 			results << query;
 		}
 
-		if (!error)
+		if (reply && reply->error() == QNetworkReply::NoError)
 		{
 			QRegExp regex("\\[.*\\[(.*)\\]\\]");
 			QRegExp rx("\"((?:[^\\\\\"]|\\\\\")*)\"");
 
-			QString text = http.readAll();
+			QString text = QString::fromUtf8(reply->readAll());
 			if (regex.indexIn(text) != -1)
 			{
 				QString csv = regex.cap(1);
@@ -76,6 +76,8 @@ void Suggest::httpGetFinished(bool error)
 		}
 		loop.exit();
 	}
+	if (reply)
+		reply->deleteLater();
 }
 
 
@@ -308,7 +310,7 @@ void WebyPlugin::getResults(QList<InputData>* inputData, QList<CatItem>* results
 }
 
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 
 QString GetShellDirectory(int type)
 {
@@ -347,15 +349,15 @@ QString WebyPlugin::getFirefoxPath()
 	QString path;
 	QString osPath;
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 	osPath = GetShellDirectory(CSIDL_APPDATA) + "/Mozilla/Firefox/";
 #endif
 
-#ifdef Q_WS_X11
+#ifdef Q_OS_LINUX
 	osPath = QDir::homePath() + "/.mozilla/firefox/";
 #endif
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
         osPath = QDir::homePath() + "/Library/Application Support/Firefox/";
 #endif
 	QString iniPath = osPath + "profiles.ini";
@@ -457,7 +459,7 @@ void WebyPlugin::getCatalog(QList<CatItem>* items)
 			iconName.length() > 0 ? iconName : getIcon()));
 	}
 
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 	if ((*settings)->value("weby/ie", true).toBool())
 	{
 		QString path = GetShellDirectory(CSIDL_FAVORITES);
