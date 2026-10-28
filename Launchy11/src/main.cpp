@@ -67,6 +67,7 @@ LaunchyWidget::LaunchyWidget(CommandFlags command) :
 	alternatives(NULL),
 	updateTimer(NULL),
 	dropTimer(NULL),
+	displayScaleRefreshTimer(NULL),
 	condensedTempIcon(NULL)
 {
 	setObjectName("launchy");
@@ -1505,8 +1506,22 @@ void LaunchyWidget::hookScreenChanges()
 	if (!window)
 		return;
 
-	connect(window, SIGNAL(screenChanged(QScreen*)), this, SLOT(clampToCurrentScreen()), Qt::UniqueConnection);
+	connect(window, SIGNAL(screenChanged(QScreen*)), this, SLOT(onWindowScreenChanged(QScreen*)), Qt::UniqueConnection);
 	watchScreen(window->screen());
+}
+
+
+void LaunchyWidget::onWindowScreenChanged(QScreen* screen)
+{
+	watchScreen(screen);
+	scheduleDisplayScaleRefresh();
+}
+
+
+void LaunchyWidget::onLogicalDpiChanged(qreal dpi)
+{
+	Q_UNUSED(dpi);
+	scheduleDisplayScaleRefresh();
 }
 
 
@@ -1523,7 +1538,34 @@ void LaunchyWidget::watchScreen(QScreen* screen)
 		return;
 
 	connect(screen, SIGNAL(availableGeometryChanged(QRect)), this, SLOT(clampToCurrentScreen()));
-	connect(screen, SIGNAL(logicalDotsPerInchChanged(qreal)), this, SLOT(clampToCurrentScreen()));
+	connect(screen, SIGNAL(logicalDotsPerInchChanged(qreal)), this, SLOT(onLogicalDpiChanged(qreal)));
+}
+
+
+void LaunchyWidget::scheduleDisplayScaleRefresh()
+{
+	if (!displayScaleRefreshTimer)
+	{
+		displayScaleRefreshTimer = new QTimer(this);
+		displayScaleRefreshTimer->setSingleShot(true);
+		displayScaleRefreshTimer->setInterval(0);
+		connect(displayScaleRefreshTimer, SIGNAL(timeout()), this, SLOT(refreshForDisplayScale()));
+	}
+	displayScaleRefreshTimer->start();
+}
+
+
+void LaunchyWidget::refreshForDisplayScale()
+{
+	if (QWindow* window = windowHandle())
+		watchScreen(window->screen());
+
+	if (adjustingPosition || listDelegate == NULL || currentSkin.isEmpty())
+		return;
+
+	QPoint savedPos = pos();
+	applySkin(currentSkin);
+	loadPosition(savedPos);
 }
 
 

@@ -115,6 +115,12 @@ public slots:
 
 private slots:
 	void clampToCurrentScreen();
+	void onWindowScreenChanged(QScreen* screen);
+	void onLogicalDpiChanged(qreal dpi);
+	void refreshForDisplayScale();
+
+protected slots:
+	void scheduleDisplayScaleRefresh();
 
 protected:
 	void saveSettings();
@@ -168,6 +174,7 @@ private:
 
 	QTimer* updateTimer;
 	QTimer* dropTimer;
+	QTimer* displayScaleRefreshTimer;
 	QThread builderThread;
 	IconExtractor iconExtractor;
 	QIcon* condensedTempIcon;

@@ -61,6 +61,10 @@ public:
 		case WM_WTSSESSION_CHANGE:
 			break;
 
+		case WM_DPICHANGED:
+			scheduleDisplayScaleRefresh();
+			break;
+
 		default:
 			if (msg->message == commandMessageId)
 			{
