@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Launchy"
-#define MyAppVerName "Launchy 3.0.0 alpha"
+#define MyAppVerName "Launchy 3.0.1 beta"
 #define MyAppPublisher "Code Jelly"
 #define MyAppURL "https://github.com/CaelanBorowiec/Launchy-11"
 #define MyAppExeName "Launchy.exe"
@@ -20,7 +20,7 @@ DefaultDirName={code:DefaultInstallDirectory}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 LicenseFile=..\..\license.txt
 OutputDir=Release\
-OutputBaseFilename=Launchy_Setup
+OutputBaseFilename=Launchy_Setup_3.0.1_beta
 SetupIconFile=..\Launchy.ico
 Compression=lzma
 SolidCompression=true
@@ -60,26 +60,19 @@ Source: ..\..\translations\launchy_de.qm; DestDir: {app}\tr\; Flags: ignoreversi
 Source: ..\..\translations\launchy_ja.qm; DestDir: {app}\tr\; Flags: ignoreversion
 Source: ..\..\translations\launchy_zh.qm; DestDir: {app}\tr\; Flags: ignoreversion
 
-; Libs
-; NOTE: Don't use "Flags: ignoreversion" on any shared system files
-Source: ..\msvcp80.dll; DestDir: {app}\Microsoft.VC80.CRT\; Flags: ignoreversion; OnlyBelowVersion: 0, 6.0
-Source: ..\msvcr80.dll; DestDir: {app}\Microsoft.VC80.CRT\; Flags: ignoreversion; OnlyBelowVersion: 0, 6.0
-Source: ..\Microsoft.VC80.CRT.manifest; DestDir: {app}\Microsoft.VC80.CRT\; Flags: ignoreversion; OnlyBelowVersion: 0, 6.0
-Source: ..\..\release\QtCore4.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\..\release\QtGui4.dll; DestDir: {app}; Flags: ignoreversion
-Source: ..\..\release\QtNetwork4.dll; DestDir: {app}; Flags: ignoreversion
-
-Source: ..\msvcp80.dll; DestDir: {app}\imageformats\Microsoft.VC80.CRT\; Flags: ignoreversion; OnlyBelowVersion: 0, 6.0
-Source: ..\msvcr80.dll; DestDir: {app}\imageformats\Microsoft.VC80.CRT\; Flags: ignoreversion; OnlyBelowVersion: 0, 6.0
-Source: ..\Microsoft.VC80.CRT.manifest; DestDir: {app}\imageformats\Microsoft.VC80.CRT\; Flags: ignoreversion; OnlyBelowVersion: 0, 6.0
-Source: ..\..\release\imageformats\qmng4.dll; DestDir: {app}\imageformats; Flags: ignoreversion
+; Qt 6 runtime (from windeployqt)
+Source: ..\..\release\Qt6*.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\release\D3Dcompiler_47.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\release\opengl32sw.dll; DestDir: {app}; Flags: ignoreversion
+Source: ..\..\release\platforms\*; DestDir: {app}\platforms; Flags: ignoreversion recursesubdirs
+Source: ..\..\release\imageformats\*; DestDir: {app}\imageformats; Flags: ignoreversion recursesubdirs
+Source: ..\..\release\styles\*; DestDir: {app}\styles; Flags: ignoreversion recursesubdirs
+Source: ..\..\release\tls\*; DestDir: {app}\tls; Flags: ignoreversion recursesubdirs
+Source: ..\..\release\networkinformation\*; DestDir: {app}\networkinformation; Flags: ignoreversion recursesubdirs
+Source: ..\..\release\generic\*; DestDir: {app}\generic; Flags: ignoreversion recursesubdirs
+Source: ..\..\release\iconengines\*; DestDir: {app}\iconengines; Flags: ignoreversion recursesubdirs
 
 ; Plugins
-; plugins may require all 3 runtimes
-Source: ..\msvcp80.dll; DestDir: {app}\plugins\Microsoft.VC80.CRT\; Flags: ignoreversion; OnlyBelowVersion: 0, 6.0
-Source: ..\msvcr80.dll; DestDir: {app}\plugins\Microsoft.VC80.CRT\; Flags: ignoreversion; OnlyBelowVersion: 0, 6.0
-Source: ..\msvcp80.dll; DestDir: {app}\plugins\Microsoft.VC80.CRT\; Flags: ignoreversion; OnlyBelowVersion: 0, 6.0
-Source: ..\Microsoft.VC80.CRT.manifest; DestDir: {app}\plugins\Microsoft.VC80.CRT\; Flags: ignoreversion; OnlyBelowVersion: 0, 6.0
 Source: ..\..\release\plugins\controly.dll; DestDir: {app}\plugins\; Flags: ignoreversion
 Source: ..\..\release\plugins\calcy.dll; DestDir: {app}\plugins\; Flags: ignoreversion
 Source: ..\..\release\plugins\gcalc.dll; DestDir: {app}\plugins\; Flags: ignoreversion
@@ -105,57 +98,8 @@ Source: ..\..\plugins\weby\weby.png; DestDir: {app}\plugins\icons\; Flags: ignor
 Source: ..\..\license.txt; DestDir: {app}; Flags: ignoreversion
 Source: ..\..\readme.pdf; DestDir: {app}; Flags: ignoreversion isreadme
 
-; Skins
-Source: ..\..\skins\Mercury\frame.png; DestDir: {app}\skins\Mercury\; Flags: ignoreversion
-Source: ..\..\skins\Mercury\author.txt; DestDir: {app}\skins\Mercury\; Flags: ignoreversion
-Source: ..\..\skins\Mercury\style.qss; DestDir: {app}\skins\Mercury\; Flags: ignoreversion
-Source: ..\..\skins\Mercury\scrollBack.png; DestDir: {app}\skins\Mercury\; Flags: ignoreversion
-Source: ..\..\skins\Mercury\scrollDown.png; DestDir: {app}\skins\Mercury\; Flags: ignoreversion
-Source: ..\..\skins\Mercury\scrollUp.png; DestDir: {app}\skins\Mercury\; Flags: ignoreversion
-Source: ..\..\skins\Mercury\spinner.mng; DestDir: {app}\skins\Mercury\; Flags: ignoreversion
-
-Source: ..\..\skins\Quicksilver2\frame.png; DestDir: {app}\skins\Quicksilver2\; Flags: ignoreversion
-Source: ..\..\skins\Quicksilver2\author.txt; DestDir: {app}\skins\Quicksilver2\; Flags: ignoreversion
-Source: ..\..\skins\Quicksilver2\style.qss; DestDir: {app}\skins\Quicksilver2\; Flags: ignoreversion
-Source: ..\..\skins\Quicksilver2\background_nc.png; DestDir: {app}\skins\Quicksilver2\; Flags: ignoreversion
-Source: ..\..\skins\Quicksilver2\mask_nc.png; DestDir: {app}\skins\Quicksilver2\; Flags: ignoreversion
-
-Source: ..\..\skins\Note\frame.png; DestDir: {app}\skins\Note\; Flags: ignoreversion
-Source: ..\..\skins\Note\author.txt; DestDir: {app}\skins\Note\; Flags: ignoreversion
-Source: ..\..\skins\Note\style.qss; DestDir: {app}\skins\Note\; Flags: ignoreversion
-Source: ..\..\skins\Note\scrollBack.png; DestDir: {app}\skins\Note\; Flags: ignoreversion
-Source: ..\..\skins\Note\scrollDown.png; DestDir: {app}\skins\Note\; Flags: ignoreversion
-Source: ..\..\skins\Note\scrollUp.png; DestDir: {app}\skins\Note\; Flags: ignoreversion
-
-Source: ..\..\skins\Black_Glass\author.txt; DestDir: {app}\skins\Black Glass\; Flags: ignoreversion
-Source: ..\..\skins\Black_Glass\frame.png; DestDir: {app}\skins\Black Glass\; Flags: ignoreversion
-Source: ..\..\skins\Black_Glass\style.qss; DestDir: {app}\skins\Black Glass\; Flags: ignoreversion
-Source: ..\..\skins\Black_Glass\scrollBack.png; DestDir: {app}\skins\Black Glass\; Flags: ignoreversion
-Source: ..\..\skins\Black_Glass\scrollDown.png; DestDir: {app}\skins\Black Glass\; Flags: ignoreversion
-Source: ..\..\skins\Black_Glass\scrollUp.png; DestDir: {app}\skins\Black Glass\; Flags: ignoreversion
-Source: ..\..\skins\Black_Glass\spinner.mng; DestDir: {app}\skins\Black Glass\; Flags: ignoreversion
-
-Source: ..\..\skins\Default\author.txt; DestDir: {app}\skins\Default\; Flags: ignoreversion
-Source: ..\..\skins\Default\frame.png; DestDir: {app}\skins\Default\; Flags: ignoreversion
-Source: ..\..\skins\Default\style.qss; DestDir: {app}\skins\Default\; Flags: ignoreversion
-Source: ..\..\skins\Default\opsButton.png; DestDir: {app}\skins\Default\; Flags: ignoreversion
-Source: ..\..\skins\Default\opsButtonPressed.png; DestDir: {app}\skins\Default\; Flags: ignoreversion
-Source: ..\..\skins\Default\scrollBack.png; DestDir: {app}\skins\Default\; Flags: ignoreversion
-Source: ..\..\skins\Default\scrollDown.png; DestDir: {app}\skins\Default\; Flags: ignoreversion
-Source: ..\..\skins\Default\scrollUp.png; DestDir: {app}\skins\Default\; Flags: ignoreversion
-Source: ..\..\skins\Default\spinner.mng; DestDir: {app}\skins\Default\; Flags: ignoreversion
-
-Source: ..\..\skins\Spotlight_Wide\author.txt; DestDir: {app}\skins\Spotlight Wide\; Flags: ignoreversion
-Source: ..\..\skins\Spotlight_Wide\frame.png; DestDir: {app}\skins\Spotlight Wide\; Flags: ignoreversion
-Source: ..\..\skins\Spotlight_Wide\style.qss; DestDir: {app}\skins\Spotlight Wide\; Flags: ignoreversion
-Source: ..\..\skins\Spotlight_Wide\opsButton.png; DestDir: {app}\skins\Spotlight Wide\; Flags: ignoreversion
-Source: ..\..\skins\Spotlight_Wide\opsButtonPressed.png; DestDir: {app}\skins\Spotlight Wide\; Flags: ignoreversion
-Source: ..\..\skins\Spotlight_Wide\scrollBack.png; DestDir: {app}\skins\Spotlight Wide\; Flags: ignoreversion
-Source: ..\..\skins\Spotlight_Wide\scrollDown.png; DestDir: {app}\skins\Spotlight Wide\; Flags: ignoreversion
-Source: ..\..\skins\Spotlight_Wide\scrollUp.png; DestDir: {app}\skins\Spotlight Wide\; Flags: ignoreversion
-Source: ..\..\skins\Spotlight_Wide\spinner.mng; DestDir: {app}\skins\Spotlight Wide\; Flags: ignoreversion
-Source: ..\..\skins\Spotlight_Wide\background_nc.png; DestDir: {app}\skins\Spotlight Wide\; Flags: ignoreversion
-Source: ..\..\skins\Spotlight_Wide\mask_nc.png; DestDir: {app}\skins\Spotlight Wide\; Flags: ignoreversion
+; Skins (deployed release tree)
+Source: ..\..\release\skins\*; DestDir: {app}\skins; Flags: ignoreversion recursesubdirs createallsubdirs
 
 Source: ..\Utilities\Special Folders\C Drive.lnk; DestDir: {app}\Utilities\Special Folders\; Flags: ignoreversion
 Source: ..\Utilities\Special Folders\Control Panel.lnk; DestDir: {app}\Utilities\Special Folders\; Flags: ignoreversion
