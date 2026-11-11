@@ -4,7 +4,7 @@
 #define MyAppName "Launchy"
 #define MyAppVerName "Launchy 3.1.0"
 #define MyAppPublisher "Code Jelly"
-#define MyAppURL "https://github.com/CaelanBorowiec/Launchy-11"
+#define MyAppURL "https://github.com/CaelanBorowiec/Launchy-Remastered"
 #define MyAppExeName "Launchy.exe"
 #define MyAppUrlName "Launchy.url"
 

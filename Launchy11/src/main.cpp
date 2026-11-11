@@ -1068,7 +1068,7 @@ void LaunchyWidget::checkForUpdate()
 	QNetworkAccessManager* http = new QNetworkAccessManager(this);
 	connect(http, SIGNAL(finished(QNetworkReply*)), this, SLOT(httpGetFinished(QNetworkReply*)));
 
-	QNetworkRequest request(QUrl("https://api.github.com/repos/CaelanBorowiec/Launchy-11/releases/latest"));
+	QNetworkRequest request(QUrl("https://api.github.com/repos/CaelanBorowiec/Launchy-Remastered/releases/latest"));
 	request.setHeader(QNetworkRequest::UserAgentHeader, "Launchy");
 	request.setRawHeader("Accept", "application/vnd.github+json");
 	http->get(request);
@@ -1103,7 +1103,7 @@ void LaunchyWidget::httpGetFinished(QNetworkReply* reply)
 	box.setTextFormat(Qt::RichText);
 	box.setWindowTitle(tr("A new version of Launchy is available"));
 	box.setText(tr("A new version of Launchy is available.\n\nYou can download it at \
-						   <qt><a href=\"https://github.com/CaelanBorowiec/Launchy-11/releases\">https://github.com/CaelanBorowiec/Launchy-11/releases</a></qt>"));
+						   <qt><a href=\"https://github.com/CaelanBorowiec/Launchy-Remastered/releases\">https://github.com/CaelanBorowiec/Launchy-Remastered/releases</a></qt>"));
 	box.exec();
 }
 

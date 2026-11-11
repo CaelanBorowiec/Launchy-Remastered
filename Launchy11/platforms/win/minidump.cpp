@@ -46,7 +46,7 @@ LONG MiniDumper::TopLevelFilter(struct _EXCEPTION_POINTERS *exceptionInfo)
 	if (miniWritten)
 	{
 		MessageBox(NULL,
-			_T("Sorry, Launchy seems to have crashed. Crash dumps were written to %TEMP%\\Launchy_MiniCrashDump.dmp and %TEMP%\\Launchy_MidiCrashDump.dmp. Please report them at https://github.com/CaelanBorowiec/Launchy-11/issues."),
+			_T("Sorry, Launchy seems to have crashed. Crash dumps were written to %TEMP%\\Launchy_MiniCrashDump.dmp and %TEMP%\\Launchy_MidiCrashDump.dmp. Please report them at https://github.com/CaelanBorowiec/Launchy-Remastered/issues."),
 			m_appName, MB_OK | MB_ICONEXCLAMATION);
 		result = EXCEPTION_EXECUTE_HANDLER;
 	}

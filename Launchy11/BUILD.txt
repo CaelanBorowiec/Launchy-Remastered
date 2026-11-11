@@ -1,8 +1,8 @@
 Launchy 3.0 is built with Qt 6 and qmake. Clone the repository and work in
 the Launchy11 directory, where Launchy.pro lives:
 
-    git clone https://github.com/CaelanBorowiec/Launchy-11.git
-    cd Launchy-11/Launchy11
+    git clone https://github.com/CaelanBorowiec/Launchy-Remastered.git
+    cd Launchy-Remastered/Launchy11
 
 The project links the Qt 5 compatibility module (core5compat). Every kit
 below needs that module installed.
@@ -89,7 +89,7 @@ Launchy11 directory, and build. Adjust the Qt path if the installed patch
 differs:
 
     set PATH=C:\Qt\6.8.3\msvc2022_64\bin;%PATH%
-    cd \path\to\Launchy-11\Launchy11
+    cd \path\to\Launchy-Remastered\Launchy11
     qmake -r Launchy.pro CONFIG+=release
     nmake
 

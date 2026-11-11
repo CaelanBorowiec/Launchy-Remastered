@@ -15,7 +15,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Launchy options</string>
+   <string>Launchy Remastered Options</string>
   </property>
   <layout class="QVBoxLayout">
    <item>
@@ -1016,7 +1016,7 @@
           <number>40</number>
          </property>
          <property name="verticalSpacing">
-          <number>22</number>
+          <number>12</number>
          </property>
          <item row="0" column="0">
           <widget class="QLabel" name="icon">
@@ -1073,7 +1073,12 @@
            </property>
            <property name="text">
             <string>&lt;p&gt;Launchy's official homepage is &lt;a href=&quot;https://www.launchy.net/&quot;&gt;https://www.launchy.net/&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;Launchy 11: Windows 11 and display scaling support, continued development&lt;br&gt;&lt;a href=&quot;https://github.com/CaelanBorowiec/Launchy-11&quot;&gt;https://github.com/CaelanBorowiec/Launchy-11&lt;/a&gt;&lt;/p&gt;</string>
+&lt;p&gt;&lt;a href=&quot;https://github.com/CaelanBorowiec/Launchy-Remastered&quot;&gt;Launchy Remastered&lt;/a&gt; brings Launchy to modern Windows:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Built on Qt 6, the toolkit behind Launchy's window and options, for continued support&lt;/li&gt;
+&lt;li&gt;Windows 11 and per-monitor display scaling&lt;/li&gt;
+&lt;li&gt;Dark mode&lt;/li&gt;
+&lt;/ul&gt;</string>
            </property>
            <property name="textFormat">
             <enum>Qt::RichText</enum>
@@ -1110,7 +1115,7 @@
            </property>
            <property name="text">
             <string>&lt;p align=&quot;center&quot;&gt;&lt;b&gt;Credits&lt;/b&gt;&lt;/p&gt;
-&lt;p align=&quot;center&quot;&gt;Creator and Developer: &lt;a href=&quot;https://www.launchy.net/&quot;&gt;Josh Karlin&lt;/a&gt;&lt;br&gt;Developer: &lt;a href=&quot;https://sourceforge.net/projects/launchy/&quot;&gt;Simon Capewell&lt;/a&gt;&lt;br&gt;Launchy 11: &lt;a href=&quot;https://github.com/CaelanBorowiec/Launchy-11&quot;&gt;Caelan Borowiec&lt;/a&gt;&lt;/p&gt;</string>
+&lt;p align=&quot;center&quot;&gt;Creator and Developer: &lt;a href=&quot;https://www.launchy.net/&quot;&gt;Josh Karlin&lt;/a&gt;&lt;br&gt;Developer: &lt;a href=&quot;https://sourceforge.net/projects/launchy/&quot;&gt;Simon Capewell&lt;/a&gt;&lt;br&gt;Launchy Remastered: &lt;a href=&quot;https://github.com/CaelanBorowiec/Launchy-Remastered&quot;&gt;Caelan Borowiec&lt;/a&gt;&lt;/p&gt;</string>
            </property>
            <property name="textFormat">
             <enum>Qt::RichText</enum>
