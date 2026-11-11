@@ -107,8 +107,15 @@ QIcon WinIconProvider::icon(const QFileInfo& info) const
 {
 	QIcon retIcon;
 	QString fileExtension = info.suffix().toLower();
+	QString nativePath = QDir::toNativeSeparators(info.filePath());
 
-	if (fileExtension == "png" ||
+	// Packaged apps have no file; SHGetFileInfo can't resolve them but the shell item factory can
+	if (nativePath.startsWith("shell:AppsFolder\\", Qt::CaseInsensitive))
+	{
+		if (!addIconFromShellFactory(nativePath, retIcon))
+			retIcon = QFileIconProvider::icon(QFileIconProvider::File);
+	}
+	else if (fileExtension == "png" ||
 		fileExtension == "bmp" ||
 		fileExtension == "jpg" ||
 		fileExtension == "jpeg")

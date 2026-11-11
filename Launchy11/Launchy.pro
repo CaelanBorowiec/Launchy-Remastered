@@ -7,5 +7,6 @@ SUBDIRS = plugins/calcy \
           src
           
 win32 {
-	SUBDIRS += plugins/controly
+	SUBDIRS += plugins/controly \
+	           plugins/storeapps
 }
