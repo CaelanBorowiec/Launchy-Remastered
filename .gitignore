@@ -43,6 +43,9 @@ Launchy11/src/release/
 Launchy11/plugins/**/release/
 Launchy11/plugins/**/debug/
 
+# --- Tooling ---
+aqtinstall.log
+
 # --- Windows deploy output (build + windeployqt; not Launchy11/win/ redistributables) ---
 Launchy11/release/*.exe
 Launchy11/release/*.dll
@@ -56,6 +59,7 @@ Launchy11/release/imageformats/
 Launchy11/release/networkinformation/
 Launchy11/release/styles/
 Launchy11/release/tls/
+Launchy11/release/translations/
 
 Launchy11/debug/*.exe
 Launchy11/debug/*.dll
