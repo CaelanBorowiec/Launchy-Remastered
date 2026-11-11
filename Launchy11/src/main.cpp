@@ -1837,6 +1837,9 @@ void fileLogMsgHandler(QtMsgType type, const QMessageLogContext&, const QString&
 
 int main(int argc, char *argv[])
 {
+	// Without this, winId() on a dialog parented to the launcher makes every launcher
+	// child native, and children with empty skin geometry get a default-sized window.
+	QCoreApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
 	createApplication(argc, argv);
 
 	qApp->setQuitOnLastWindowClosed(false);
