@@ -2,8 +2,10 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Launchy"
-#define MyAppVerName "Launchy 3.2.0"
-#define MyAppPublisher "Code Jelly"
+#define MyAppVersion "3.2.1"
+#define MyAppVerName "Launchy " + MyAppVersion
+#define MyAppPublisher "Caelan.dev"
+#define MyAppCopyright "Copyright (C) 2026 Caelan Borowiec"
 #define MyAppURL "https://github.com/CaelanBorowiec/Launchy-Remastered"
 #define MyAppExeName "Launchy.exe"
 #define MyAppUrlName "Launchy.url"
@@ -11,8 +13,10 @@
 [Setup]
 AppMutex=LaunchyMutex,Global\LaunchyMutex
 AppName={#MyAppName}
+AppVersion={#MyAppVersion}
 AppVerName={#MyAppVerName}
 AppPublisher={#MyAppPublisher}
+AppCopyright={#MyAppCopyright}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
@@ -20,8 +24,17 @@ DefaultDirName={code:DefaultInstallDirectory}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 LicenseFile=..\..\license.txt
 OutputDir=Release\
-OutputBaseFilename=Launchy_Setup_3.2.0
+OutputBaseFilename=Launchy_Setup_{#MyAppVersion}
 SetupIconFile=..\Launchy.ico
+VersionInfoVersion={#MyAppVersion}.0
+VersionInfoTextVersion={#MyAppVersion}
+VersionInfoProductVersion={#MyAppVersion}.0
+VersionInfoProductTextVersion={#MyAppVersion}
+VersionInfoProductName={#MyAppName}
+VersionInfoDescription={#MyAppName} Setup
+VersionInfoCompany={#MyAppPublisher}
+VersionInfoCopyright={#MyAppCopyright}
+VersionInfoOriginalFileName=Launchy_Setup_{#MyAppVersion}.exe
 Compression=lzma
 SolidCompression=true
 ShowLanguageDialog=yes

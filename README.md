@@ -10,6 +10,11 @@ Install it, then press **Alt+Space**. Type what you want and hit Enter. Right-cl
 
 For the full manual (plugins, options, shortcuts, and command line switches), see the [original Launchy readme](Launchy11/Readme.md).
 
+## What's new in 3.2.1
+
+- App and installer icons now include sizes up to 256 pixels, so the large preview in Windows Explorer stays sharp.
+- The installer file properties include version 3.2.1, copyright Caelan Borowiec, and company Caelan.dev. Apps & Features lists the publisher as Caelan.dev.
+
 ## What's new in 3.2.0
 
 - Built on Qt 6, the toolkit behind Launchy's window and options. The old Qt 4 it used is long out of support, so this keeps Launchy building and running on current Windows.
