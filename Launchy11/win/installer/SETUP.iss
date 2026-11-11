@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Launchy"
-#define MyAppVerName "Launchy 3.0.4"
+#define MyAppVerName "Launchy 3.1.0"
 #define MyAppPublisher "Code Jelly"
 #define MyAppURL "https://github.com/CaelanBorowiec/Launchy-11"
 #define MyAppExeName "Launchy.exe"
@@ -20,7 +20,7 @@ DefaultDirName={code:DefaultInstallDirectory}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 LicenseFile=..\..\license.txt
 OutputDir=Release\
-OutputBaseFilename=Launchy_Setup_3.0.4
+OutputBaseFilename=Launchy_Setup_3.1.0
 SetupIconFile=..\Launchy.ico
 Compression=lzma
 SolidCompression=true
