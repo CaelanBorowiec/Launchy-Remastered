@@ -1835,12 +1835,41 @@ void fileLogMsgHandler(QtMsgType type, const QMessageLogContext&, const QString&
 }
 
 
+#ifdef Q_OS_WIN
+// Qt only follows the Windows dark theme with the windows11 style, which requires Windows 11.
+// On older versions, use Fusion (which honours the dark platform palette) while the system is dark.
+static void setupColorSchemeStyle()
+{
+	if (QOperatingSystemVersion::current() >= QOperatingSystemVersion::Windows11)
+		return;
+
+	const QString nativeStyle = qApp->style()->name();
+	static bool usingFusion = false;
+
+	auto applyStyle = [nativeStyle](Qt::ColorScheme scheme)
+	{
+		bool dark = scheme == Qt::ColorScheme::Dark;
+		if (dark == usingFusion)
+			return;
+		usingFusion = dark;
+		qApp->setStyle(dark ? QStringLiteral("Fusion") : nativeStyle);
+	};
+
+	applyStyle(QGuiApplication::styleHints()->colorScheme());
+	QObject::connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged, qApp, applyStyle);
+}
+#endif
+
+
 int main(int argc, char *argv[])
 {
 	// Without this, winId() on a dialog parented to the launcher makes every launcher
 	// child native, and children with empty skin geometry get a default-sized window.
 	QCoreApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
 	createApplication(argc, argv);
+#ifdef Q_OS_WIN
+	setupColorSchemeStyle();
+#endif
 
 	qApp->setQuitOnLastWindowClosed(false);
 
