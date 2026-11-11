@@ -61,6 +61,9 @@ Launchy11/release/styles/
 Launchy11/release/tls/
 Launchy11/release/translations/
 
+# Inno Setup installer output
+Launchy11/win/installer/Release/
+
 Launchy11/debug/*.exe
 Launchy11/debug/*.dll
 Launchy11/debug/*.pdb
