@@ -299,6 +299,9 @@
               </item>
               <item row="0" column="1">
                <widget class="QComboBox" name="genCondensed">
+                <property name="minimumContentsLength">
+                 <number>14</number>
+                </property>
                 <item>
                  <property name="text">
                   <string>Name and path</string>
@@ -1073,12 +1076,7 @@
            </property>
            <property name="text">
             <string>&lt;p&gt;Launchy's official homepage is &lt;a href=&quot;https://www.launchy.net/&quot;&gt;https://www.launchy.net/&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a href=&quot;https://github.com/CaelanBorowiec/Launchy-Remastered&quot;&gt;Launchy Remastered&lt;/a&gt; brings Launchy to modern Windows:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Built on Qt 6, the toolkit behind Launchy's window and options, for continued support&lt;/li&gt;
-&lt;li&gt;Windows 11 and per-monitor display scaling&lt;/li&gt;
-&lt;li&gt;Dark mode&lt;/li&gt;
-&lt;/ul&gt;</string>
+&lt;p&gt;&lt;a href=&quot;https://github.com/CaelanBorowiec/Launchy-Remastered&quot;&gt;Launchy Remastered&lt;/a&gt; brings Launchy to modern Windows:&lt;br&gt;&lt;i&gt;Per-monitor display scaling, Microsoft Store apps (Win 10+), dark mode, bug fixes, and more&lt;/i&gt;&lt;br&gt;&lt;i&gt;Built on Qt 6 for continued support&lt;/i&gt;&lt;/p&gt;</string>
            </property>
            <property name="textFormat">
             <enum>Qt::RichText</enum>

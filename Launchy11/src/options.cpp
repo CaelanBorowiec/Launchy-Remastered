@@ -42,10 +42,6 @@ OptionsDialog::OptionsDialog(QWidget * parent) :
 	restoreGeometry(windowGeometry);
 	tabWidget->setCurrentIndex(currentTab);
 
-#ifdef Q_OS_WIN
-	about_homepage->setText(about_homepage->text() + \
-		"<p><br>If you would like to uninstall Launchy, please close Launchy and run \"Uninstall Launchy\" from the start menu.</br></p>");
-#endif
 	// Load General Options
 	if (QSystemTrayIcon::isSystemTrayAvailable())
 		genShowTrayIcon->setChecked(gSettings->value("GenOps/showtrayicon", true).toBool());
