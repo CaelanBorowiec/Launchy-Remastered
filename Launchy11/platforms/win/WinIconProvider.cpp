@@ -212,6 +212,24 @@ bool WinIconProvider::addIconFromImageList(int imageListIndex, int iconIndex, QI
 }
 
 
+// IShellItemImageFactory returns a premultiplied 32 bpp DIB section whose row
+// order QImage::fromHBITMAP doesn't honour, so read the bits directly.
+static QImage imageFromDibSection(HBITMAP hbm)
+{
+	DIBSECTION ds = {};
+	if (GetObject(hbm, sizeof(ds), &ds) != sizeof(ds) || !ds.dsBm.bmBits || ds.dsBm.bmBitsPixel != 32)
+		return QImage::fromHBITMAP(hbm);
+
+	QImage image(static_cast<const uchar*>(ds.dsBm.bmBits), ds.dsBm.bmWidth, ds.dsBm.bmHeight,
+				 ds.dsBm.bmWidthBytes, QImage::Format_ARGB32_Premultiplied);
+
+	// Positive height means bottom-up rows; mirrored() and copy() both detach from the DIB bits
+	if (ds.dsBmih.biHeight > 0)
+		return image.mirrored(false, true);
+	return image.copy();
+}
+
+
 // On Vista or 7 we could use SHIL_JUMBO to get a 256x256 icon,
 // but we'll use SHCreateItemFromParsingName as it'll give an identical
 // icon to the one shown in explorer and it scales automatically.
@@ -234,7 +252,7 @@ bool WinIconProvider::addIconFromShellFactory(QString filePath, QIcon& icon) con
 				hr = psiif->GetImage(iconSize, SIIGBF_RESIZETOFIT | SIIGBF_ICONONLY, &iconBitmap);
 				if (hr == S_OK)
 				{
-					QPixmap iconPixmap = QPixmap::fromImage(QImage::fromHBITMAP(iconBitmap));
+					QPixmap iconPixmap = QPixmap::fromImage(imageFromDibSection(iconBitmap));
 					icon.addPixmap(iconPixmap);
 					DeleteObject(iconBitmap);
 				}
