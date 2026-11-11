@@ -10,11 +10,12 @@ Install it, then press **Alt+Space**. Type what you want and hit Enter. Right-cl
 
 For the full manual (plugins, options, shortcuts, and command line switches), see the [original Launchy readme](Launchy11/Readme.md).
 
-## What's new
+## What's new in 3.2.0
 
 - Built on Qt 6, the toolkit behind Launchy's window and options. The old Qt 4 it used is long out of support, so this keeps Launchy building and running on current Windows.
 - Per-monitor display scaling and better window placement on high-DPI setups
 - Follows Windows dark mode (Fusion style while the system theme is dark)
+- Finds Microsoft Store apps such as Spotify and Calculator (new Store Apps plugin)
 - About page and update checks pointed at this GitHub project
 - Calcy plugin updated for the Qt 6 build
 
